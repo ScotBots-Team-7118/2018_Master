@@ -2,6 +2,7 @@ package org.usfirst.frc.team7118.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import org.usfirst.frc.team7118.robot.Scotstants;
 
 /**
@@ -17,20 +18,26 @@ public class Robot extends IterativeRobot {
 	Joystick joystick;
 	Auto auto;
 	Gyroscope gyro;
+	SendableChooser<Integer> autoSelector;
 	
 	// This function is run when the robot is first initialized
 	@Override
 	public void robotInit() {
 		joystick = new Joystick(Scotstants.JOYSTICK_PORT);
 		drive = new Drive();
-		auto = new Auto();
+		auto = new Auto(drive);
 		gyro = new Gyroscope();
+		autoSelector = new SendableChooser<Integer>();
+		autoSelector.addDefault("Default Auto", Scotstants.AUTO_DEFAULT);
+		autoSelector.addObject("Left Auto", Scotstants.AUTO_L);
+		autoSelector.addObject("Center Auto", Scotstants.AUTO_C);
+		autoSelector.addObject("Right Auto", Scotstants.AUTO_R);
 	}
 	
 	// This function is run immediately before autonomousPeriodic()
 	@Override
 	public void autonomousInit() {
-		
+		System.out.println((int) autoSelector.getSelected());
 	}
 	
 	//This function is called periodically during autonomous
