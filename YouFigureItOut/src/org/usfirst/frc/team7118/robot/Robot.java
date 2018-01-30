@@ -2,6 +2,10 @@ package org.usfirst.frc.team7118.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc.team7118.robot.Scotstants;
 
 /**
@@ -17,7 +21,7 @@ public class Robot extends IterativeRobot {
 	Joystick joystick;
 	Auto auto;
 	Gyroscope gyro;
-	
+	public SendableChooser autoChooser;
 	// This function is run when the robot is first initialized
 	@Override
 	public void robotInit() {
@@ -25,14 +29,17 @@ public class Robot extends IterativeRobot {
 		drive = new Drive();
 		auto = new Auto();
 		gyro = new Gyroscope();
-	}
-	
+		autoChooser = new SendableChooser();
+		autoChooser.addDefault("Center", "Center");
+		autoChooser.addObject("Left", "Left");
+		autoChooser.addObject("Right", "Right");
+		SmartDashboard.putData("Auto Mode Chooser", autoChooser);
+	} 
 	// This function is run immediately before autonomousPeriodic()
 	@Override
 	public void autonomousInit() {
-		
-	}
 	
+	}
 	//This function is called periodically during autonomous
 	@Override
 	public void autonomousPeriodic() {
