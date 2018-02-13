@@ -21,10 +21,10 @@ public interface Scotstants {
 	final double STRONG_SPEED = .5;
 	final int PORT_GYRO = 9;
 
-	final int PORT_JOY_R = 1;// Joystick R's Port
-	final int PORT_JOY_L = 2;// Joystick L's Port
-	final int PORT_JOYLI = 3;// joystick Lifter port
-	public final int JOYSTICK_PORT = 0;
+	public final int PORT_JOY_R = 1;// Joystick R's Port
+	public final int PORT_JOY_L = 0;// Joystick L's Port
+	public final int PORT_JOYLI = 3;// joystick Lifter port
+	public final int JOYSTICK_PORT = 2;
 	
 	final double PI = 3.141; // Variable equal to pi
 	final double DIS_TO_AUTO_LINE = 120; // Distance in inches to the auto line

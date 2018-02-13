@@ -16,9 +16,9 @@ public class Drive {
 		talLF = new TalonSRX(Scotstants.TALON_LF_PORT);
 		talRM = new TalonSRX(Scotstants.TALON_RM_PORT);
 		talRF = new TalonSRX(Scotstants.TALON_RF_PORT);
+	
 	}
 
-	// fetch classes
 //	Sensors sensors;
 
 	void setRight(double amountR) {
@@ -68,29 +68,23 @@ public class Drive {
 		setRight(moving);
 	}
 
-//	public void teleopdrive() {
-//		if (joyR.getY() >= 0.2) {
-//		setRight(Math.pow(joyR.getRawAxis(1), 2));
-//		}else {
-//			setLeft(0);
-//		}
-//		if(joyR.getY() <= -0.2){
-//		setRight(-(Math.pow(joyR.getRawAxis(1),2)));
-//		}else {
-//			setLeft(0);
-//		}
-//		if (joyL.getY() >= 0.2) {	
-//			setLeft(Math.pow(joyL.getRawAxis(1), 2));
-//		} else {
-//			setLeft(0);
-//		}
-//		if(joyL.getY() <= -0.2){
-//		setLeft(-(Math.pow(joyL.getRawAxis(1),2)));
-//		}else{
-//		setLeft(0);
-//		}
-//		 
-//	}
+	public void teleopdrive(double joyR, double joyL) {
+		if (joyR >= 0.2) {
+		setRight(Math.pow(joyR, 2));
+		}else if(joyR <= -0.2){
+		setRight(-(Math.pow(joyR,2)));
+		}else {
+			setLeft(0);
+		}
+		if (joyL >= 0.2) {	
+			setLeft(Math.pow(joyL, 2));
+		} else if(joyL <= -0.2){
+		setLeft(-(Math.pow(joyL,2)));
+		}else{
+		setLeft(0);
+		}
+		 
+	}
 
 //	public void teleopintake() {
 //		if (joyR.getRawButton(0)) {

@@ -18,46 +18,51 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	
+
 	Drive drive;
-	Joystick joystick;
-//	Auto auto;
-//	Gyroscope gyro;
-//	public SendableChooser autoChooser;
+	Joystick joystick, joyR, joyL;
+
+	// Auto auto;
+	// Gyroscope gyro;
+	// public SendableChooser autoChooser;
 	// This function is run when the robot is first initialized
 	@Override
 	public void robotInit() {
 		joystick = new Joystick(Scotstants.JOYSTICK_PORT);
+		joyR = new Joystick(Scotstants.PORT_JOY_R);
+		joyL = new Joystick(Scotstants.PORT_JOY_L);
 		drive = new Drive();
-//		auto = new Auto();
-//		gyro = new Gyroscope();
-//		autoChooser = new SendableChooser();
-//		autoChooser.addDefault("Center", "Center");
-//		autoChooser.addObject("Left", "Left");
-//		autoChooser.addObject("Right", "Right");
-//		SmartDashboard.putData("Auto Mode Chooser", autoChooser);
-	} 
+		// auto = new Auto();
+		// gyro = new Gyroscope();
+		// autoChooser = new SendableChooser();
+		// autoChooser.addDefault("Center", "Center");
+		// autoChooser.addObject("Left", "Left");
+		// autoChooser.addObject("Right", "Right");
+		// SmartDashboard.putData("Auto Mode Chooser", autoChooser);
+	}
+
 	// This function is run immediately before autonomousPeriodic()
 	@Override
 	public void autonomousInit() {
-	
+
 	}
-	//This function is called periodically during autonomous
+
+	// This function is called periodically during autonomous
 	@Override
 	public void autonomousPeriodic() {
-		
+
 	}
-	
+
 	// This function is called periodically during operator control (teleop)
 	@Override
 	public void teleopPeriodic() {
-		drive.setRight(joystick.getRawAxis(0)/2);
+		drive.teleopdrive(joyR.getRawAxis(1), joyL.getRawAxis(1));
 	}
-	
+
 	// This function is called periodically during test mode
 	@Override
 	public void testPeriodic() {
-		
+
 	}
-	
+
 }
