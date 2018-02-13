@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import org.usfirst.frc.team7118.robot.Scotstants;
+import com.ctre.phoenix.motorcontrol.can.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -16,17 +17,17 @@ public class Robot extends IterativeRobot {
 	
 	Drive drive;
 	Joystick joystick;
-	Auto auto;
-	Gyroscope gyro;
+//	Auto auto;
+//	Gyroscope gyro;
 	SendableChooser<Integer> autoSelector;
 	
 	// This function is run when the robot is first initialized
 	@Override
 	public void robotInit() {
-		joystick = new Joystick(Scotstants.JOYSTICK_PORT);
+//		joystick = new Joystick(Scotstants.JOYSTICK_PORT);
 		drive = new Drive();
-		auto = new Auto(drive);
-		gyro = new Gyroscope();
+//		auto = new Auto(drive);
+//		gyro = new Gyroscope();
 		autoSelector = new SendableChooser<Integer>();
 		autoSelector.addDefault("Default Auto", Scotstants.AUTO_DEFAULT);
 		autoSelector.addObject("Left Auto", Scotstants.AUTO_L);
@@ -49,7 +50,7 @@ public class Robot extends IterativeRobot {
 	// This function is called periodically during operator control (teleop)
 	@Override
 	public void teleopPeriodic() {
-		
+		drive.setRight(joystick.getRawAxis(0)/2);
 	}
 	
 	// This function is called periodically during test mode

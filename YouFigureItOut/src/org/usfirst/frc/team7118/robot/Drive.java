@@ -22,8 +22,8 @@ public class Drive {
 	Scotstants scotstants;
 	Sensors sensors;
 	// init joysticks
-	Joystick joyR = new Joystick(Scotstants.PORT_JOY_R);
-	Joystick joyL = new Joystick(Scotstants.PORT_JOY_L);
+	Joystick joyR = new Joystick(Scotstants.JOYSTICK_R_PORT);
+	Joystick joyL = new Joystick(Scotstants.JOYSTICK_L_PORT);
 
 	public Drive(Sensors sense) {
 		// sensors
@@ -33,13 +33,13 @@ public class Drive {
 	void setRight(double amountR) {
 		// set right side drive
 		talRM.set(ControlMode.PercentOutput, amountR);
-		talRF.set(ControlMode.Follower, Scotstants.PORT_RF);
+//		talRF.set(ControlMode.Follower, Scotstants.PORT_RF);
 	}
 
 	void setLeft(double amountL) {
 		// set left side drive
 		talLM.set(ControlMode.PercentOutput, amountL);
-		talLF.set(ControlMode.Follower, Scotstants.PORT_LF);
+//		talLF.set(ControlMode.Follower, Scotstants.PORT_LF);
 	}
 
 	void stop(boolean stopping) {
