@@ -1,8 +1,8 @@
 package org.usfirst.frc.team7118.robot;
-
 import org.usfirst.frc.team7118.robot.Scotstants;
 
 public class Auto{
+	/*
 	Auto_Path auto_path;
 	Drive drive;
 	Sensors sensors;
@@ -26,4 +26,5 @@ public class Auto{
 			break;
 		}
 	}
+	*/
 }

@@ -6,12 +6,12 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Lifting {
-	Joystick joyLi = new Joystick (Scostants.);
-	
-		TalonSRX lTal = new TalonSRX(Scotstants.PORT_L);
-		public void lift() {
-			if (Math.abs(joyLi.getY()) > 0.2) {
-			lTal.set(ControlMode.PercentOutput, joyLi.getY());
-		}
-		}
+//	Joystick joyLi = new Joystick (Scotstants.PORT_JOYLI);
+//	
+//		TalonSRX lTal = new TalonSRX(Scotstants.PORT_L);
+//		public void lift() {
+//			if (Math.abs(joyLi.getY()) > 0.2) {
+//			lTal.set(ControlMode.PercentOutput, joyLi.getY());
+//		}
+//		}
 }

@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Encoder;
+import org.usfirst.frc.team7118.robot.Scotstants;
 
 public class Drive {
 	// name talons
@@ -15,31 +16,21 @@ public class Drive {
 		talLF = new TalonSRX(Scotstants.TALON_LF_PORT);
 		talRM = new TalonSRX(Scotstants.TALON_RM_PORT);
 		talRF = new TalonSRX(Scotstants.TALON_RF_PORT);
-
 	}
 
 	// fetch classes
-	Scotstants scotstants;
-	Sensors sensors;
-	// init joysticks
-	Joystick joyR = new Joystick(Scotstants.PORT_JOY_R);
-	Joystick joyL = new Joystick(Scotstants.PORT_JOY_L);
-
-	public Drive(Sensors sense) {
-		// sensors
-		sensors = sense;
-	}
+//	Sensors sensors;
 
 	void setRight(double amountR) {
 		// set right side drive
 		talRM.set(ControlMode.PercentOutput, amountR);
-		talRF.set(ControlMode.Follower, Scotstants.PORT_RF);
+		talRF.set(ControlMode.Follower, Scotstants.TALON_RF_PORT);
 	}
 
 	void setLeft(double amountL) {
 		// set left side drive
 		talLM.set(ControlMode.PercentOutput, amountL);
-		talLF.set(ControlMode.Follower, Scotstants.PORT_LF);
+		talLF.set(ControlMode.Follower, Scotstants.TALON_LF_PORT);
 	}
 
 	void stop(boolean stopping) {
@@ -69,7 +60,7 @@ public class Drive {
 	 * 
 	 * @param amount
 	 *            speed for motors
-	 **/
+	 */
 
 	void move(double moving) {
 		// forward moving function
@@ -77,35 +68,39 @@ public class Drive {
 		setRight(moving);
 	}
 
-	// Teleop:
-	// bring in intake class
-	Intake intake;
+//	public void teleopdrive() {
+//		if (joyR.getY() >= 0.2) {
+//		setRight(Math.pow(joyR.getRawAxis(1), 2));
+//		}else {
+//			setLeft(0);
+//		}
+//		if(joyR.getY() <= -0.2){
+//		setRight(-(Math.pow(joyR.getRawAxis(1),2)));
+//		}else {
+//			setLeft(0);
+//		}
+//		if (joyL.getY() >= 0.2) {	
+//			setLeft(Math.pow(joyL.getRawAxis(1), 2));
+//		} else {
+//			setLeft(0);
+//		}
+//		if(joyL.getY() <= -0.2){
+//		setLeft(-(Math.pow(joyL.getRawAxis(1),2)));
+//		}else{
+//		setLeft(0);
+//		}
+//		 
+//	}
 
-	public void teleopdrive() {
-		// parabolic drive for right joystick
-		if (joyR.getY() >= 0.2 || joyR.getY() <= -0.2) {
-			setRight(Math.pow(joyR.getY(), 3));
-		} else {
-			setRight(0);
-		}
-		if (joyL.getY() >= 0.2 || joyL.getY() <= -0.2) {
-			// parabolic drive for left joystick
-			setLeft(Math.pow(joyL.getY(), 3));
-		} else {
-			setLeft(0);
-		}
-
-	}
-
-	public void teleopintake() {
-		if (joyR.getRawButton(0)) {
-			// intake motor in
-			intake.inMotor(.5);
-		} else if (joyR.getRawButton(3)) {
-			// intake motor out
-			intake.inMotor(-.5);
-		} else {
-			intake.inMotor(0);
-		}
-	}
+//	public void teleopintake() {
+//		if (joyR.getRawButton(0)) {
+//			// intake motor in
+//			intake.inMotor(.5);
+//		} else if (joyR.getRawButton(3)) {
+//			// intake motor out
+//			intake.inMotor(-.5);
+//		} else {
+//			intake.inMotor(0);
+//		}
+//	}
 }
