@@ -56,7 +56,7 @@ public class Robot extends IterativeRobot {
 	// This function is called periodically during operator control (teleop)
 	@Override
 	public void teleopPeriodic() {
-		drive.teleopdrive(joyR.getRawAxis(1), joyL.getRawAxis(1));
+		drive.teleopdrive(joyR.getRawAxis(1), -joyL.getRawAxis(1));
 	}
 
 	// This function is called periodically during test mode

@@ -16,21 +16,21 @@ public class Drive {
 		talLF = new TalonSRX(Scotstants.TALON_LF_PORT);
 		talRM = new TalonSRX(Scotstants.TALON_RM_PORT);
 		talRF = new TalonSRX(Scotstants.TALON_RF_PORT);
-	
+
 	}
 
-//	Sensors sensors;
+	// Sensors sensors;
 
 	void setRight(double amountR) {
 		// set right side drive
 		talRM.set(ControlMode.PercentOutput, amountR);
-		talRF.set(ControlMode.Follower, Scotstants.TALON_RF_PORT);
+		talRF.set(ControlMode.Follower, Scotstants.TALON_RM_PORT);
 	}
 
 	void setLeft(double amountL) {
 		// set left side drive
 		talLM.set(ControlMode.PercentOutput, amountL);
-		talLF.set(ControlMode.Follower, Scotstants.TALON_LF_PORT);
+		talLF.set(ControlMode.Follower, Scotstants.TALON_LM_PORT);
 	}
 
 	void stop(boolean stopping) {
@@ -70,31 +70,31 @@ public class Drive {
 
 	public void teleopdrive(double joyR, double joyL) {
 		if (joyR >= 0.2) {
-		setRight(Math.pow(joyR, 2));
-		}else if(joyR <= -0.2){
-		setRight(-(Math.pow(joyR,2)));
-		}else {
+			setRight(Math.pow(joyR, 2));
+		} else if (joyR <= -0.2) {
+			setRight(-(Math.pow(joyR, 2)));
+		} else {
+			setRight(0);
+		}
+		if (joyL >= 0.2) {
+			setLeft(Math.pow(joyL, 2));
+		} else if (joyL <= -0.2) {
+			setLeft(-(Math.pow(joyL, 2)));
+		} else {
 			setLeft(0);
 		}
-		if (joyL >= 0.2) {	
-			setLeft(Math.pow(joyL, 2));
-		} else if(joyL <= -0.2){
-		setLeft(-(Math.pow(joyL,2)));
-		}else{
-		setLeft(0);
-		}
-		 
+
 	}
 
-//	public void teleopintake() {
-//		if (joyR.getRawButton(0)) {
-//			// intake motor in
-//			intake.inMotor(.5);
-//		} else if (joyR.getRawButton(3)) {
-//			// intake motor out
-//			intake.inMotor(-.5);
-//		} else {
-//			intake.inMotor(0);
-//		}
-//	}
+	// public void teleopintake() {
+	// if (joyR.getRawButton(0)) {
+	// // intake motor in
+	// intake.inMotor(.5);
+	// } else if (joyR.getRawButton(3)) {
+	// // intake motor out
+	// intake.inMotor(-.5);
+	// } else {
+	// intake.inMotor(0);
+	// }
+	// }
 }
