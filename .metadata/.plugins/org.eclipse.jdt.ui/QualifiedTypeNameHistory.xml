@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="com.ctre.phoenix.motorcontrol.ControlMode"/>
-<fullyQualifiedTypeName name="edu.wpi.first.wpilibj.command.Command"/>
-<fullyQualifiedTypeName name="edu.wpi.first.wpilibj.smartdashboard.SendableChooser"/>
-<fullyQualifiedTypeName name="edu.wpi.first.wpilibj.smartdashboard.SmartDashboard"/>
-<fullyQualifiedTypeName name="org.usfirst.frc.team7118.robot.Auto.Auto_Path"/>
-</qualifiedTypeNameHistroy>
