@@ -77,15 +77,16 @@ public class Drive {
 		setLeft(moving);
 		setRight(moving);
 	}
-	public void moveLength(double distIN, double speed) {
+	public boolean moveLength(double distIN, double speed) {
 		double a = 0;
 		a = (distIN/Scotstants.WHEEL_CIRCUM)*Scotstants.ENCODER_ROTATION_DIFF;
-		if(a < distIN) {
-			move(speed);
+		move(speed);
+		if(a >= distIN) {
+			return true;
 		}else {
-			stop();
+			return false;
 		}
-	}
+}
 	// in: inches
 	// out rotations
 	public double distIN(double n) {
