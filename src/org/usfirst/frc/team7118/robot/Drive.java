@@ -21,8 +21,7 @@ public class Drive {
 		talRM = new TalonSRX(Scotstants.TALON_RM_PORT);
 		talRF = new TalonSRX(Scotstants.TALON_RF_PORT);
 		
-		
-
+		brakeMode(false);
 	}
 
 	// Sensors sensors;
@@ -43,10 +42,21 @@ public class Drive {
 		// stop both motors
 		setRight(0);
 		setLeft(0);
-		talLM.setNeutralMode(NeutralMode.Brake);
-		talRM.setNeutralMode(NeutralMode.Brake);
-		talLF.setNeutralMode(NeutralMode.Brake);
-		talRF.setNeutralMode(NeutralMode.Brake);
+	}
+	
+	public void brakeMode(boolean mode) {
+		if (mode) {
+			talLM.setNeutralMode(NeutralMode.Brake);
+			talRM.setNeutralMode(NeutralMode.Brake);
+			talLF.setNeutralMode(NeutralMode.Brake);
+			talRF.setNeutralMode(NeutralMode.Brake);
+		}
+		else {
+			talLM.setNeutralMode(NeutralMode.Coast);
+			talRM.setNeutralMode(NeutralMode.Coast);
+			talLF.setNeutralMode(NeutralMode.Coast);
+			talRF.setNeutralMode(NeutralMode.Coast);
+		}
 	}
 
 	/**
@@ -75,7 +85,7 @@ public class Drive {
 	void move(double moving) {
 		// forward moving function
 		setLeft(moving);
-		setRight(moving);
+		setRight(-moving);
 	}
 	public boolean moveLength(double distIN, double speed) {
 		double a = 0;
