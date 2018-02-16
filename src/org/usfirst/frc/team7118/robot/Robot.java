@@ -23,7 +23,7 @@ public class Robot extends IterativeRobot {
 	Joystick joystick, joyR, joyL;
 
 	// Auto auto;
-	// Gyroscope gyro;
+	Gyroscope gyro;
 	// public SendableChooser autoChooser;
 	// This function is run when the robot is first initialized
 	@Override
@@ -33,7 +33,7 @@ public class Robot extends IterativeRobot {
 		joyL = new Joystick(Scotstants.PORT_JOY_L);
 		drive = new Drive();
 		// auto = new Auto();
-		// gyro = new Gyroscope();
+		gyro = new Gyroscope();
 		// autoChooser = new SendableChooser();
 		// autoChooser.addDefault("Center", "Center");
 		// autoChooser.addObject("Left", "Left");
@@ -56,7 +56,16 @@ public class Robot extends IterativeRobot {
 	// This function is called periodically during operator control (teleop)
 	@Override
 	public void teleopPeriodic() {
-		drive.teleopdrive(joyR.getRawAxis(1), -joyL.getRawAxis(1));
+//		drive.teleopdrive(joyR.getRawAxis(1), -joyL.getRawAxis(1));
+	System.out.println(gyro.getOffsetHeading());
+	drive.move(0.2);
+	
+	if (joyL.getRawButton(0)) {
+		drive.brakeMode(true);
+	}
+	if (joyR.getRawButton(0)) {
+		drive.brakeMode(false);
+	}
 	}
 
 	// This function is called periodically during test mode
