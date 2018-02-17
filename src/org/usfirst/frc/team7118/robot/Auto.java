@@ -67,7 +67,7 @@ public class Auto {
 	public void runCenter() {
 		
 		//path chooser for center
-		String arrangement = DriverStation.getInstance().getGameSpecificMessage();
+		String arrangement = null;
 		if (String.valueOf(arrangement.charAt(1)) == "L") {
 			side = 0;
 		} else {
