@@ -80,9 +80,9 @@ public class Auto {
 			// actual dist = 10.4, give 10 instead to give leeway
 			
 			//rough
-			drive.moveLength(drive.distIN(124.8) ,.1);
-			
-			state = Autostate.AUTO_FIRST_BREAK;
+			if(!drive.moveLength(124.8 ,.1)) {
+				state = Autostate.AUTO_FIRST_BREAK;
+			}
 			break;
 			
 			

@@ -20,7 +20,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 public class Robot extends IterativeRobot {
 
 	Drive drive;
-	Joystick joystick, joyR, joyL;
+	Joystick joyR, joyL;
 
 	// Auto auto;
 	Gyroscope gyro;
@@ -28,12 +28,11 @@ public class Robot extends IterativeRobot {
 	// This function is run when the robot is first initialized
 	@Override
 	public void robotInit() {
-		joystick = new Joystick(Scotstants.JOYSTICK_PORT);
+		gyro = new Gyroscope();
 		joyR = new Joystick(Scotstants.PORT_JOY_R);
 		joyL = new Joystick(Scotstants.PORT_JOY_L);
-		drive = new Drive();
+		drive = new Drive(gyro);
 		// auto = new Auto();
-		gyro = new Gyroscope();
 		// autoChooser = new SendableChooser();
 		// autoChooser.addDefault("Center", "Center");
 		// autoChooser.addObject("Left", "Left");
@@ -44,7 +43,8 @@ public class Robot extends IterativeRobot {
 	// This function is run immediately before autonomousPeriodic()
 	@Override
 	public void autonomousInit() {
-
+		gyro.reset();
+		
 	}
 
 	// This function is called periodically during autonomous
@@ -53,11 +53,15 @@ public class Robot extends IterativeRobot {
 
 	}
 
+	@Override
+	public void teleopInit() {
+		drive.pidControl(SmartDashboard.getNumber("Slider 0", 0), SmartDashboard.getNumber("Slider 1", 0), SmartDashboard.getNumber("Slider 2", 0), SmartDashboard.getNumber("slider 3", 0));
+	}
+	
 	// This function is called periodically during operator control (teleop)
 	@Override
 	public void teleopPeriodic() {
 //		drive.teleopdrive(joyR.getRawAxis(1), -joyL.getRawAxis(1));
-	System.out.println(gyro.getOffsetHeading());
 	drive.move(0.2);
 	
 	if (joyL.getRawButton(0)) {
