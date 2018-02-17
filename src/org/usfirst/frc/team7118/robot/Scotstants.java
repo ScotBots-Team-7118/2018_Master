@@ -1,20 +1,19 @@
 package org.usfirst.frc.team7118.robot;
 
-
 public interface Scotstants {
 	public final int TALON_LM_PORT = 7;
 	public final int TALON_LF_PORT = 8;
 	public final int TALON_RM_PORT = 4;
 	public final int TALON_RF_PORT = 5;
 
-	public final int INTAL_R_PORT =5; //intake talon port
-	public final int INTAL_L_PORT =6; //intake talon port
-//	final int PORT_L =7; //lifter port#
-//	final int PORT_ENC_R1 = 1; // Right encoder first port
-//	final int PORT_ENC_R2 = 2; // Right encoder second port
-//
-//	final int PORT_ENC_L1 = 7; // Left encoder first port
-//	final int PORT_ENC_L2 = 8; // Left encoder second port
+	public final int INTAL_R_PORT = 5; // intake talon port
+	public final int INTAL_L_PORT = 6; // intake talon port
+	// final int PORT_L =7; //lifter port#
+	// final int PORT_ENC_R1 = 1; // Right encoder first port
+	// final int PORT_ENC_R2 = 2; // Right encoder second port
+	//
+	// final int PORT_ENC_L1 = 7; // Left encoder first port
+	// final int PORT_ENC_L2 = 8; // Left encoder second port
 
 	final double STANDARD_SPEED = .3;
 	final double WEAK_SPEED = -.5;
@@ -25,7 +24,7 @@ public interface Scotstants {
 	public final int PORT_JOY_L = 0;// Joystick L's Port
 	public final int PORT_JOYLI = 3;// joystick Lifter port
 	public final int JOYSTICK_PORT = 2;
-	
+
 	final double PI = 3.141; // Variable equal to pi
 	final double DIS_TO_AUTO_LINE = 120; // Distance in inches to the auto line
 	final double DIS_TO_SWITCH = 168; // Distance in inches to the middle of the switch final
@@ -35,5 +34,9 @@ public interface Scotstants {
 	final double ROT_TO_AUTO_LINE = DIS_TO_AUTO_LINE / WHEEL_CIRCUM; // Number of rotations to the autoline
 	final double ROT_TO_SWITCH = DIS_TO_SWITCH / WHEEL_CIRCUM; // Number of rotations to the middle of the switch
 	final double ROT_TO_SCALE = DIS_TO_SCALE / WHEEL_CIRCUM; // Number of rotations to the middle of the scale }
+	public final double MAX_DEGREES_FULL_SPEED = 5.0;
+	public final double TURN_OFFSET = 3;
+	public final double MIN_TURN_SPEED = 0.18;
+	public final long ENCODER_ROTATION_DIFF = 0;
 
 }
