@@ -3,181 +3,161 @@ package org.usfirst.frc.team7118.robot;
 import org.usfirst.frc.team7118.robot.Scotstants;
 import edu.wpi.first.wpilibj.DriverStation;
 
-public class Auto {
+public class Auto implements Scotstants {
 	Drive drive;
+	char switchPos, scalePos;
+	AutoState state;
 	
-	int side = 0;
-	boolean next = false;
-
-	public enum Autostate {
-		AUTO_FIRST_DIST,
-		// actual dist = 10.4, give 10 instead to give leeway
-
-		// dist = 10
-
-		AUTO_FIRST_BREAK,
-		// break
-
-		AUTO_FIRST_TURN,
-		// 90 degrees (left side)/270 degrees (right side)
-		
-
-		AUTO_SECOND_BREAK,
-		// break
-
-		AUTO_SECOND_DIST,
-		// dist = 4
-
-		AUTO_THIRD_BREAK,
-		// break
-
-		AUTO_SECOND_TURN,
-		// 90 degrees (left side)/270 degrees (right side)
-		
-
-		AUTO_FOURTH_BREAK,
-		// break
-
-		AUTO_THIRD_DIST,
-		// dist = 4
-
-		AUTO_FIFTH_BREAK,
-		// break
-
-		AUTO_RAISE_SWITCH,
-		// raise arms to: switch fence hight + 1
-		// (two feet?)
-
-		AUTO_SIXTH_BREAK,
-		// break
-
-		AUTO_DELIVER_CUBE,
-		// reverse intake motors to eject cube (go slow)
-
-		AUTO_SEVENTH_BREAK
-		// break
-
-		// end autonomous
+	/**
+	 * Constructs the autonomous class
+	 * @param drive
+	 */
+	public Auto(Drive drive) {
+		this.drive = drive;
+		reset();
 	}
-
-	//center auto state machine
 	
-	Autostate state = Autostate.AUTO_FIRST_DIST;
-
+	/**
+	 * The different states of our robot during autonomous
+	 */
+	public enum AutoState {
+		AUTO_FIRST_DIST,
+		AUTO_FIRST_BREAK,
+		AUTO_FIRST_TURN,
+		AUTO_SECOND_BREAK,
+		AUTO_SECOND_DIST,
+		AUTO_THIRD_BREAK,
+		AUTO_SECOND_TURN,
+		AUTO_FOURTH_BREAK,
+		AUTO_THIRD_DIST,
+		AUTO_FIFTH_BREAK,
+		AUTO_RAISE_SWITCH,
+		AUTO_SIXTH_BREAK,
+		AUTO_DELIVER_CUBE,
+		AUTO_SEVENTH_BREAK
+	}
+	
+	/**
+	 * Parses game data for autonomous in order to determine priorities for the robot
+	 */
+	public void parseGameData() {
+		switchPos = DriverStation.getInstance().getGameSpecificMessage().charAt(0);
+		scalePos = DriverStation.getInstance().getGameSpecificMessage().charAt(1);
+	}
+	
+	/**
+	 * Runs the autonomous code for a given starting position
+	 * @param position
+	 */
+	public void run(AutoPath position) {
+		switch(position) {
+		case CENTER:
+			runCenter();
+		case LEFT:
+			runSide(AutoPath.LEFT);
+		case RIGHT:
+			runSide(AutoPath.RIGHT);
+		}
+	}
+	
+	/**
+	 * Runs the autonomous code for a given side (left or right)
+	 * @param position
+	 */
+	public void runSide(AutoPath position) {
+		
+	}
+	
+	/**
+	 * Runs the autonomous code for the given switch location (left or right)
+	 */
 	public void runCenter() {
 		
 		//path chooser for center
-		String arrangement = null;
-		if (String.valueOf(arrangement.charAt(1)) == "L") {
-			side = 0;
-		} else {
-			side = 1;
-		}
+//		if (switchPos.equals("L")) {
+//			side = 0;
+//		} else {
+//			side = 1;
+//		}
 
 		
 		switch (state) {
 		case AUTO_FIRST_DIST:
 			// actual dist = 10.4, give 10 instead to give leeway
-			
-			//rough
-			if(!drive.moveLength(124.8 ,.1)) {
-				state = Autostate.AUTO_FIRST_BREAK;
+			if( (drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 <= AUTO_CENTER_DIST[0]*Scotstants.ROTATIONS_TO_FEET) { 
+			drive.move(Scotstants.AUTO_SPEED);}
+			else{
+				nextStep(AutoState.AUTO_FIRST_BREAK);
+
 			}
-			break;
+						break;
 			
 			
 		case AUTO_FIRST_BREAK:
 			// break
 
-			drive.stop(true);
 			
 			
-				state = Autostate.AUTO_FIRST_TURN;
+			
+			nextStep(AutoState.AUTO_FIRST_TURN);
 			break;
 
 			
 		case AUTO_FIRST_TURN:
 			// 90 degrees (left side)/270 degrees (right side)
 			
-			
-			if (side == 0) {
-				drive.turn(-90, .1);
-				
-			}else {
-				drive.turn(90, .1);
-			}
-			
-			state = Autostate.AUTO_SECOND_BREAK;
+			nextStep(AutoState.AUTO_SECOND_BREAK);
 			break;
 
 			
 		case AUTO_SECOND_BREAK:
 			// break
 
-			drive.stop(true);
 			
-			state = Autostate.AUTO_SECOND_DIST;
+			
+			nextStep(AutoState.AUTO_SECOND_DIST);
 			break;
 
 			
 		case AUTO_SECOND_DIST:
 			// dist = 4
-
-			drive.moveLength(drive.distIN(48), .1);
 			
-			state = Autostate.AUTO_THIRD_BREAK;
+			nextStep(AutoState.AUTO_THIRD_BREAK);
 			break;
 
 			
 		case AUTO_THIRD_BREAK:
-			// break
-
-			drive.stop(true);
 			
-		
-			state = Autostate.AUTO_SECOND_TURN;
-			
+			nextStep(AutoState.AUTO_SECOND_TURN);
 			break;
-			
 			
 		case AUTO_SECOND_TURN:
 			// 90 degrees (left side)/270 degrees (right side)
-
 			
-			if (side == 0) {
-				drive.turn(-90, 0.1);
-			}else {
-				drive.turn(90,  0.1);
-			}
-			
-			state = Autostate.AUTO_FOURTH_BREAK;
+			nextStep(AutoState.AUTO_FOURTH_BREAK);
 			break;
 
 			
 		case AUTO_FOURTH_BREAK:
-			// break
 			
-			drive.stop(true);
-			
-			state = Autostate.AUTO_THIRD_DIST;
+			nextStep(AutoState.AUTO_THIRD_DIST);
 			break;
-			
 			
 		case AUTO_THIRD_DIST:
 			// dist = 4
 			
-			drive.moveLength(48, 0.1);
 			
-			state = Autostate.AUTO_FIFTH_BREAK;
+			
+			nextStep(AutoState.AUTO_FIFTH_BREAK);
 			break;
 			
 			
 		case AUTO_FIFTH_BREAK:
 			// break
 			
-			drive.stop(true);
+			drive.stop();
 			
-			state= Autostate.AUTO_RAISE_SWITCH;
+			nextStep(AutoState.AUTO_RAISE_SWITCH);
 				break;
 				
 				
@@ -187,7 +167,7 @@ public class Auto {
 			
 			
 			
-			state = Autostate.AUTO_SIXTH_BREAK;
+			nextStep(AutoState.AUTO_SIXTH_BREAK);
 				break;
 				
 				
@@ -196,7 +176,7 @@ public class Auto {
 			
 			
 			
-			state = Autostate.AUTO_DELIVER_CUBE;
+			nextStep(AutoState.AUTO_DELIVER_CUBE);
 				break;
 				
 				
@@ -205,17 +185,31 @@ public class Auto {
 			
 			
 			
-			state =  Autostate.AUTO_SEVENTH_BREAK;
+			nextStep(AutoState.AUTO_SEVENTH_BREAK);
 				break;
 				
 				
 		case AUTO_SEVENTH_BREAK:
 			// break
-			
-			
-			
-			
 			// end autonomous
 		}
+	}
+	
+	/**
+	 * Resets all necessary sensors and moves the autonomous progression to the given step
+	 * @param step
+	 */
+	public void nextStep(AutoState step) {
+		drive.resetGyro();
+		drive.resetEncoders();
+		state = step;
+		drive.stop();
+	}
+	
+	/**
+	 * Resets the autonomous progression
+	 */
+	public void reset() {
+		state = AutoState.AUTO_FIRST_DIST;
 	}
 }
