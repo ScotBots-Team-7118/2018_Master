@@ -18,34 +18,34 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
  * directory.
  */
 public class Robot extends IterativeRobot {
-
+	// Defining Variables
 	Drive drive;
-	Joystick joystick, joyR, joyL;
-
-	// Auto auto;
-	// Gyroscope gyro;
-	// public SendableChooser autoChooser;
+	Joystick joyR, joyL;
+	Auto auto;
+	Gyroscope gyro;
+//	SendableChooser autoChooser;
+	
 	// This function is run when the robot is first initialized
 	@Override
 	public void robotInit() {
-		joystick = new Joystick(Scotstants.JOYSTICK_PORT);
-		joyR = new Joystick(Scotstants.PORT_JOY_R);
-		joyL = new Joystick(Scotstants.PORT_JOY_L);
-		drive = new Drive();
-		drive.encoderReset();
-		// auto = new Auto();
-		// gyro = new Gyroscope();
-		// autoChooser = new SendableChooser();
-		// autoChooser.addDefault("Center", "Center");
-		// autoChooser.addObject("Left", "Left");
-		// autoChooser.addObject("Right", "Right");
-		// SmartDashboard.putData("Auto Mode Chooser", autoChooser);
+		gyro = new Gyroscope();
+		joyR = new Joystick(Scotstants.JOY_R_PORT);
+		joyL = new Joystick(Scotstants.JOY_L_PORT);
+		drive = new Drive(gyro);
+		auto = new Auto(drive);
+//		autoChooser = new SendableChooser();
+//		autoChooser.addDefault("Center", "Center");
+//		autoChooser.addObject("Left", "Left");
+//		autoChooser.addObject("Right", "Right");
+//		SmartDashboard.putData("Auto Mode Chooser", autoChooser);
 	}
 
 	// This function is run immediately before autonomousPeriodic()
 	@Override
 	public void autonomousInit() {
-
+		gyro.reset();
+		drive.encoderReset();
+		
 	}
 
 	// This function is called periodically during autonomous
@@ -54,12 +54,25 @@ public class Robot extends IterativeRobot {
 
 	}
 
+	@Override
+	public void teleopInit() {
+		drive.pidControl(SmartDashboard.getNumber("Slider 0", 0), SmartDashboard.getNumber("Slider 1", 0), SmartDashboard.getNumber("Slider 2", 0), SmartDashboard.getNumber("slider 3", 0));
+		gyro.reset();
+		drive.encoderReset();
+	}
+	
 	// This function is called periodically during operator control (teleop)
 	@Override
 	public void teleopPeriodic() {
-		drive.teleopdrive(joyR.getRawAxis(1), joyL.getRawAxis(1));
-		System.out.println("Left = " + drive.getNormalizedPositionL());
-		System.out.println("Right = " + drive.getNormalizedPositionR());
+//		drive.teleopdrive(joyR.getRawAxis(1), -joyL.getRawAxis(1));
+		drive.move(0.2);
+		
+		if (joyL.getRawButton(0)) {
+			drive.brakeMode(true);
+		}
+		if (joyR.getRawButton(0)) {
+			drive.brakeMode(false);
+		}
 	}
 
 	// This function is called periodically during test mode
