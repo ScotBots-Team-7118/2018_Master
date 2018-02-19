@@ -24,10 +24,12 @@ public interface Scotstants {
 	// Constants for Autonomous
 	public final int AUTO_CENTER_DIST[] = {10, 4, 4};
 	public enum AutoPath {CENTER, LEFT, RIGHT};
-	public final double AUTO_SPEED = 0.2;
 	public final double AUTO_LIFTING_SPEED = 0.2;
 	public final double AUTO_INTAKE_SPEED = 0.2;
 	
 	// The amount of rotations in a single foot
 	public final double ROTATIONS_TO_FEET = 0;
+	public final double AUTO_MOVE_SPEED = 0.2;
+	public final double AUTO_SIDE_DIST[] = {22.4, 4, 1};
+	public final double AUTO_SIDE_TURN[] = {-90, 90};
 }
