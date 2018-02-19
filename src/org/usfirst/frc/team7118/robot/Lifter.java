@@ -4,9 +4,27 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 
+/**
+ * Skeleton for a lifting system based on
+ * 2 distinct mechanical arms and using
+ * 4 limit switches to check for data at given points.
+ */
+/*
+ * Methods:
+ * public Lifter() - Constructs a new lifter.
+ * public void operate(double v) - Operates the lifter for a given velocity
+ * public boolean atSwitch() - Returns true if the limit switch at the switch is active.
+ * public boolean atScale() - Returns true if the limit switch at the scale is active.
+ */
+
 public class Lifter {
+	// Define Variables
 	TalonSRX talA1, talA2;
 	DigitalInput trigTop, trigBottom, trigSwitch, trigScale;
+	
+	/**
+	 * Constructs a new lifter.
+	 */
 	public Lifter() {
 		talA1 = new TalonSRX(Scotstants.TALON_A1_PORT);
 		talA2 = new TalonSRX(Scotstants.TALON_A2_PORT);
@@ -16,6 +34,10 @@ public class Lifter {
 		trigScale = new DigitalInput(0);
 	}
 	
+	/**
+	 * Operates the lifter for a given velocity
+	 * @param v
+	 */
 	public void operate(double v) {
 		double outputVelocity;
 		if (trigBottom.get()) {
@@ -31,13 +53,19 @@ public class Lifter {
 		talA2.set(ControlMode.PercentOutput, outputVelocity);
 	}
 	
+	/**
+	 * Returns true if the limit switch at the switch is active.
+	 * @return
+	 */
 	public boolean atSwitch() {
-		if (trigSwitch.get()) return true;
-		else return false;
+		return trigSwitch.get();
 	}
 	
+	/**
+	 * Returns true if the limit switch at the scale is active.
+	 * @return
+	 */
 	public boolean atScale() {
-		if (trigScale.get()) return true;
-		else return false;
+		return trigScale.get();
 	}
 }

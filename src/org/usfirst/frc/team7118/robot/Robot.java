@@ -23,42 +23,52 @@ public class Robot extends IterativeRobot {
 	Joystick joyR, joyL;
 	Auto auto;
 	Gyroscope gyro;
-//	SendableChooser autoChooser;
+	Intake intake;
+	Lifter lifter;
+	SendableChooser<Scotstants.AutoPath> autoChooser;
 	
 	// This function is run when the robot is first initialized
 	@Override
 	public void robotInit() {
 		gyro = new Gyroscope();
+		intake = new Intake();
+		lifter = new Lifter();
 		joyR = new Joystick(Scotstants.JOY_R_PORT);
 		joyL = new Joystick(Scotstants.JOY_L_PORT);
 		drive = new Drive(gyro);
-		auto = new Auto(drive);
-//		autoChooser = new SendableChooser();
-//		autoChooser.addDefault("Center", "Center");
-//		autoChooser.addObject("Left", "Left");
-//		autoChooser.addObject("Right", "Right");
-//		SmartDashboard.putData("Auto Mode Chooser", autoChooser);
+		auto = new Auto(drive, intake, lifter);
+		autoChooser = new SendableChooser<Scotstants.AutoPath>();
+		autoChooser.addDefault("Select Autonomous", null);
+		autoChooser.addObject("Center", Scotstants.AutoPath.CENTER);
+		autoChooser.addObject("Left", Scotstants.AutoPath.LEFT);
+		autoChooser.addObject("Right", Scotstants.AutoPath.RIGHT);
+		SmartDashboard.putData("Auto Mode Chooser", autoChooser);
 	}
 
 	// This function is run immediately before autonomousPeriodic()
 	@Override
 	public void autonomousInit() {
 		gyro.reset();
-		drive.encoderReset();
-		
+		drive.resetEncoders();
 	}
 
 	// This function is called periodically during autonomous
 	@Override
 	public void autonomousPeriodic() {
-
+		if (autoChooser.getSelected() == null) {
+			drive.move(0);
+			System.out.println("ERROR: No autonomous selected");
+		}
+		else {
+			auto.run(autoChooser.getSelected());
+		}
 	}
 
 	@Override
 	public void teleopInit() {
 		drive.pidControl(SmartDashboard.getNumber("Slider 0", 0), SmartDashboard.getNumber("Slider 1", 0), SmartDashboard.getNumber("Slider 2", 0), SmartDashboard.getNumber("slider 3", 0));
 		gyro.reset();
-		drive.encoderReset();
+		drive.resetEncoders();
 	}
 	
 	// This function is called periodically during operator control (teleop)

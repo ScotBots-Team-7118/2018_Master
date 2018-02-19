@@ -1,31 +1,38 @@
 package org.usfirst.frc.team7118.robot;
 
+/**
+ * Skeleton for normalizing data from a BNO055 gyroscope.
+ */
 /*
-* methods:
-* public Gyroscope() - Constructs the class
-* public double getOffsetHeading() - Returns the heading in relation to the angle offset
-* public void reset() - Sets the angle offset to the current heading
-* public double getRawHeading() - Gets the heading without taking the angle offset into account
-* public double getOffset() - Returns the angle offset
-* public double normalizeHeadingVal(double heading) - Normalizes a heading value to a range of (-180, 180)
+* Methods:
+* public Gyroscope() - Constructs a new Gyroscope object.
+* public double getOffsetHeading() - Returns the heading in relation to the angle offset.
+* public void reset() - Resets the angle offset to the current heading.
+* public double getRawHeading() - Gets the normalized heading of the gyroscope without taking the angle offset into account.
+* public double getOffset() - Returns the angle offset.
+* public double normalizeHeadingVal(double heading) - Normalizes a heading value to a range of (-180, 180) degrees.
  */
 
 public class Gyroscope {
 	// Defines the variable imu from the class BNO055
-	public static BNO055 imu = BNO055.getInstance(BNO055.opmode_t.OPERATION_MODE_IMUPLUS,
-			BNO055.vector_type_t.VECTOR_EULER);
+	public static BNO055 imu = BNO055.getInstance(BNO055.opmode_t.OPERATION_MODE_IMUPLUS, BNO055.vector_type_t.VECTOR_EULER);
 
 	// Defines the variable for the angle offset.
 	// Leave as a class variable so that each instance can have it's own angleOffset
 	private double angleOffset;
 
-	// Constructs the class
+	/**
+	 * Constructs a new Gyroscope object.
+	 */
 	public Gyroscope() {
 		// Resets the gyro
 		reset();
 	}
 
-	// Returns the heading in relation to the offset
+	/**
+	 * Returns the heading in relation to the offset.
+	 * @return
+	 */
 	public double getOffsetHeading() {
 		// Defines a variable for angle
 		double angle;
@@ -36,7 +43,9 @@ public class Gyroscope {
 		return angle;
 	}
 
-	// Resets the angleOffset to the current heading
+	/**
+	 * Resets the angle offset to the current heading.
+	 */
 	public void reset() {
 		// Sets angleOffset to the raw heading of the gyro
 		angleOffset = getRawHeading();
@@ -49,18 +58,26 @@ public class Gyroscope {
 		}
 	}
 
-	// Gets the normalized heading of the gyro without taking the offset into
-	// account
+	/**
+	 * Gets the normalized heading of the gyroscope without taking the angle offset into account.
+	 * @return
+	 */
 	public double getRawHeading() {
 		return normalizeHeadingVal(imu.getVector()[0]);
 	}
-
-	// Returns the angle offset
+	
+	/**
+	 * Returns the angle offset.
+	 * @return
+	 */
 	public double getOffset() {
 		return angleOffset;
 	}
 
-	// Normalize a heading value to the range of (-180, 180)
+	/**
+	 * Normalizes a heading value to the range of (-180, 180) degrees.
+	 * @return
+	 */
 	private double normalizeHeadingVal(double heading) {
 
 		// Checks if the remainder of the given heading and 360 is greater than 180
