@@ -26,6 +26,7 @@ public interface Scotstants {
 	public enum AutoPath {CENTER, LEFT, RIGHT};
 	public final double AUTO_LIFTING_SPEED = 0.2;
 	public final double AUTO_INTAKE_SPEED = 0.2;
+	public final double GYRO_DEAD_ZONE = 0.75;
 	
 	// The amount of rotations in a single foot
 	public final double ROTATIONS_TO_FEET = 0;

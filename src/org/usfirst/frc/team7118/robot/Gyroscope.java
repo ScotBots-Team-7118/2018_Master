@@ -34,13 +34,8 @@ public class Gyroscope {
 	 * @return
 	 */
 	public double getOffsetHeading() {
-		// Defines a variable for angle
-		double angle;
-
-		// Set the angle to the remainder of the current angle divided by 180
-		angle = normalizeHeadingVal(getRawHeading() - angleOffset);
-
-		return angle;
+		// Returns the remainder of the current angle divided by 180
+		return normalizeHeadingVal(getRawHeading() - angleOffset);
 	}
 
 	/**
@@ -79,17 +74,17 @@ public class Gyroscope {
 	 * @return
 	 */
 	private double normalizeHeadingVal(double heading) {
-
+		heading = heading%360;
 		// Checks if the remainder of the given heading and 360 is greater than 180
-		if (heading % 360 > 180.0) {
+		if (heading > 180.0) {
 			// If so, set the heading to a negative value greater than -180
-			heading = (heading % 360.0) - 360.0;
+			heading = heading - 360;
 		}
 
 		// Otherwise, checks if the opposite case is true
-		else if ((heading % 360) <= -180.0) {
+		else if (heading <= -180.0) {
 			// If so, set the heading to a positive number less than 180
-			heading = (heading % 360.0) + 360.0;
+			heading = heading + 360.0;
 		}
 
 		return heading;

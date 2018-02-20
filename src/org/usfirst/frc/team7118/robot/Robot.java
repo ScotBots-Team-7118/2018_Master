@@ -21,7 +21,7 @@ public class Robot extends IterativeRobot {
 	// Defining Variables
 	Drive drive;
 	Joystick joyR, joyL;
-	Auto auto;
+//	Auto auto;
 	Gyroscope gyro;
 	Intake intake;
 	Lifter lifter;
@@ -31,12 +31,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		gyro = new Gyroscope();
-		intake = new Intake();
+//		intake = new Intake();
 		lifter = new Lifter();
 		joyR = new Joystick(Scotstants.JOY_R_PORT);
 		joyL = new Joystick(Scotstants.JOY_L_PORT);
 		drive = new Drive(gyro);
-		auto = new Auto(drive, intake, lifter);
+//		auto = new Auto(drive, intake, lifter);
 		autoChooser = new SendableChooser<Scotstants.AutoPath>();
 		autoChooser.addDefault("Select Autonomous", null);
 		autoChooser.addObject("Center", Scotstants.AutoPath.CENTER);
@@ -48,7 +48,6 @@ public class Robot extends IterativeRobot {
 	// This function is run immediately before autonomousPeriodic()
 	@Override
 	public void autonomousInit() {
-		gyro.reset();
 		drive.resetEncoders();
 	}
 
@@ -60,35 +59,45 @@ public class Robot extends IterativeRobot {
 			System.out.println("ERROR: No autonomous selected");
 		}
 		else {
-			auto.run(autoChooser.getSelected());
+//			auto.run(autoChooser.getSelected());
 		}
 	}
 
 	@Override
 	public void teleopInit() {
 		drive.pidControl(SmartDashboard.getNumber("Slider 0", 0), SmartDashboard.getNumber("Slider 1", 0), SmartDashboard.getNumber("Slider 2", 0), SmartDashboard.getNumber("slider 3", 0));
-		gyro.reset();
 		drive.resetEncoders();
 	}
 	
 	// This function is called periodically during operator control (teleop)
 	@Override
 	public void teleopPeriodic() {
-//		drive.teleopdrive(joyR.getRawAxis(1), -joyL.getRawAxis(1));
-		drive.move(0.2);
+		drive.teleopdrive(joyR.getRawAxis(1), joyL.getRawAxis(1));
+		if(joyR.getRawButton(1)) {
+			drive.gyroDrive(0.1);
+		}
 		
-		if (joyL.getRawButton(0)) {
+		if (joyL.getRawButton(4)) {
 			drive.brakeMode(true);
 		}
-		if (joyR.getRawButton(0)) {
+		if (joyR.getRawButton(4)) {
 			drive.brakeMode(false);
 		}
+		System.out.println("Gyro = " + gyro.getRawHeading());
+		System.out.println("Top = " + !lifter.trigTop.get());
+		System.out.println("Bottom = " + !lifter.trigBottom.get());
+		System.out.println("Switch = " + !lifter.trigSwitch.get());
 	}
 
-	// This function is called periodically during test mode
+	@Override
+	public void testInit() {
+	}
+	
+	// This function is called periodically during test modes
 	@Override
 	public void testPeriodic() {
-
+		System.out.println(gyro.getRawHeading());
+		System.out.println(gyro.getOffsetHeading());
 	}
-
 }
+

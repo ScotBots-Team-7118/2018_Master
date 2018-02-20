@@ -122,7 +122,7 @@ public class Drive {
 	 */
 	public void setRight(double amountR) {
 		// set right side drive
-		talRM.set(ControlMode.PercentOutput, -amountR);
+		talRM.set(ControlMode.PercentOutput, amountR);
 		talRF.set(ControlMode.Follower, Scotstants.TALON_RM_PORT);
 	}
 	
@@ -132,7 +132,7 @@ public class Drive {
 	 */
 	public void setLeft(double amountL) {
 		// set left side drive
-		talLM.set(ControlMode.PercentOutput, amountL);
+		talLM.set(ControlMode.PercentOutput, -amountL);
 		talLF.set(ControlMode.Follower, Scotstants.TALON_LM_PORT);
 	}
 	
@@ -248,4 +248,20 @@ public class Drive {
 			return true;
 		}
 	}
+	public void gyroDrive(double v) {
+		v  = -v;
+		if (gyro.getOffsetHeading() >= Scotstants.GYRO_DEAD_ZONE) {
+			setLeft(v/2);
+			setRight(2*v);
+		}
+		else if (gyro.getOffsetHeading() < -Scotstants.GYRO_DEAD_ZONE) {
+			setLeft(2*v);
+			setRight(v/2);
+		}
+		else {
+			setLeft(v);
+			setRight(v);
+		}
+	}
 }
+

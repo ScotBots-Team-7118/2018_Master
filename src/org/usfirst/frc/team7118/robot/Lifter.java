@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class Lifter {
 	// Define Variables
 	TalonSRX talA1, talA2;
-	DigitalInput trigTop, trigBottom, trigSwitch, trigScale;
+	DigitalInput trigTop, trigBottom, trigSwitch;
 	
 	/**
 	 * Constructs a new lifter.
@@ -28,10 +28,9 @@ public class Lifter {
 	public Lifter() {
 		talA1 = new TalonSRX(Scotstants.TALON_A1_PORT);
 		talA2 = new TalonSRX(Scotstants.TALON_A2_PORT);
-		trigTop = new DigitalInput(0);
-		trigBottom = new DigitalInput(0);
-		trigSwitch = new DigitalInput(0);
-		trigScale = new DigitalInput(0);
+		trigTop = new DigitalInput(9);
+		trigBottom = new DigitalInput(8);
+		trigSwitch = new DigitalInput(7);
 	}
 	
 	/**
@@ -58,7 +57,7 @@ public class Lifter {
 	 * @return
 	 */
 	public boolean atSwitch() {
-		return trigSwitch.get();
+		return !trigSwitch.get();
 	}
 	
 	/**
@@ -66,6 +65,6 @@ public class Lifter {
 	 * @return
 	 */
 	public boolean atScale() {
-		return trigScale.get();
+		return !trigTop.get();
 	}
 }

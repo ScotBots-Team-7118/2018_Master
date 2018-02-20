@@ -78,7 +78,7 @@ public class Auto implements Scotstants {
 				nextStep(AutoState.AUTO_FIRST_BREAK);
 			}
 			else {
-				drive.move(Scotstants.AUTO_MOVE_SPEED);
+				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);
 			}
 			break;
 		case AUTO_FIRST_BREAK:
@@ -104,7 +104,7 @@ public class Auto implements Scotstants {
 				nextStep(AutoState.AUTO_SECOND_BREAK);
 			}
 			else {
-				drive.move(Scotstants.AUTO_MOVE_SPEED);
+				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);
 			}
 			break;
 		case AUTO_SECOND_BREAK:
@@ -150,7 +150,7 @@ public class Auto implements Scotstants {
 				nextStep(AutoState.AUTO_FIFTH_BREAK);
 			}
 			else {
-				drive.move(Scotstants.AUTO_MOVE_SPEED);
+				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);
 			}
 			break;
 		case AUTO_FIFTH_BREAK:
@@ -171,11 +171,11 @@ public class Auto implements Scotstants {
 			break;
 		case AUTO_SECOND_TURN:
 			System.out.println("ERROR: Out of given autonomous sequence");
-			drive.move(0);
+			drive.gyroDrive(0);
 			break;
 		case AUTO_SEVENTH_BREAK:
 			System.out.println("ERROR: Out of given autonomous sequence");
-			drive.move(0);
+			drive.gyroDrive(0);
 			break;
 		}
 	}
@@ -212,7 +212,7 @@ public class Auto implements Scotstants {
 			// actual dist = 10.4, give 10 instead to give leeway
 			//take adverage encoder values and compares them to values we want 
 			if( (drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 < AUTO_CENTER_DIST[0]*Scotstants.ROTATIONS_TO_FEET) { 
-				drive.move(Scotstants.AUTO_SPEED);
+				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);
 			}
 			// once the above statement is no longer switch to the next step
 			else{
@@ -264,7 +264,7 @@ public class Auto implements Scotstants {
 			 */
 		case AUTO_SECOND_DIST:
 			if( (drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 < AUTO_CENTER_DIST[1]*Scotstants.ROTATIONS_TO_FEET) { 
-				drive.move(Scotstants.AUTO_SPEED);}
+				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);}
 			else{
 				nextStep(AutoState.AUTO_THIRD_BREAK);
 
@@ -333,7 +333,7 @@ public class Auto implements Scotstants {
 			 */
 		case AUTO_THIRD_DIST:
 			if( (drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 < AUTO_CENTER_DIST[2]*Scotstants.ROTATIONS_TO_FEET) { 
-				drive.move(Scotstants.AUTO_SPEED);
+				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);
 			}
 			else{
 				nextStep(AutoState.AUTO_SIXTH_BREAK);
@@ -363,7 +363,7 @@ public class Auto implements Scotstants {
 			 */
 		case AUTO_SEVENTH_BREAK:
 			// break
-			drive.move(0);
+			drive.gyroDrive(0);
 			timer.stop();
 		}
 	}
