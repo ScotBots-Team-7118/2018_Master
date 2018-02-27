@@ -182,21 +182,38 @@ public class Drive {
 	 */
 	public void teleopdrive(double joyR, double joyL) {
 		if (joyR >= 0.2) {
-			setRight(0.6*Math.pow(joyR, 2));
+			setRight(balanceSpeed(joyR));
 		} else if (joyR <= -0.2) {
-			setRight(-(0.6*Math.pow(joyR, 2)));
+			setRight(balanceSpeed(joyR));
 		} else {
 			setRight(0);
 		}
 		if (joyL >= 0.2) {
-			setLeft(0.6*Math.pow(joyL, 2));
+			setLeft(balanceSpeed(joyL));
 		} else if (joyL <= -0.2) {
-			setLeft(-(0.6*Math.pow(joyL, 2)));
+			setLeft(balanceSpeed(joyL));
 		} else {
 			setLeft(0);
 		}
-
 	}
+	
+		/**
+		 * Balances the speed of the robot using a quadratic equation
+		 * @param joy
+		 * @return
+		 */
+		public double balanceSpeed(double joy) {
+			// Sets the a, b, and c values of the function
+			double a = 0.619;
+			double b = -0.123;
+			double c = 0.106;
+
+			// Checks if the joystick value is positive or negative
+			double sign = joy / Math.abs(joy);
+
+			// Returns the answer to the function for the given x value
+			return sign * (a * (Math.pow(joy, 2)) + b * joy + c);
+		}
 	
 	/**
 	 * Turns the robot a set amount of degrees.

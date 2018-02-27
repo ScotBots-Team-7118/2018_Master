@@ -22,9 +22,9 @@ public class Robot extends IterativeRobot {
 	// Defining Variables
 	Drive drive;
 	Joystick joyR, joyL;
-//	Auto auto;
+	Auto auto;
 	Gyroscope gyro;
-//	Intake intake;
+	Intake intake;
 	Lifter lifter;
 	SendableChooser<Scotstants.AutoPath> autoChooser;
 	
@@ -32,12 +32,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		gyro = new Gyroscope();
-//		intake = new Intake();
+		intake = new Intake();
 		lifter = new Lifter();
 		joyR = new Joystick(Scotstants.JOY_R_PORT);
 		joyL = new Joystick(Scotstants.JOY_L_PORT);
 		drive = new Drive(gyro);
-//		auto = new Auto(drive, intake, lifter);
+		auto = new Auto(drive, intake, lifter);
 		autoChooser = new SendableChooser<Scotstants.AutoPath>();
 		autoChooser.addDefault("Select Autonomous", null);
 		autoChooser.addObject("Center", Scotstants.AutoPath.CENTER);
@@ -51,6 +51,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousInit() {
 		drive.resetEncoders();
+		gyro.reset();
+		auto.timer.reset();
 	}
 
 	// This function is called periodically during autonomous
@@ -61,14 +63,15 @@ public class Robot extends IterativeRobot {
 			System.out.println("ERROR: No autonomous selected");
 		}
 		else {
-//			auto.run(autoChooser.getSelected());
+			auto.run(autoChooser.getSelected());
 		}
 	}
 
 	@Override
 	public void teleopInit() {
-		drive.pidControl(SmartDashboard.getNumber("Slider 0", 0), SmartDashboard.getNumber("Slider 1", 0), SmartDashboard.getNumber("Slider 2", 0), SmartDashboard.getNumber("slider 3", 0));
+//		drive.pidControl(SmartDashboard.getNumber("Slider 0", 0), SmartDashboard.getNumber("Slider 1", 0), SmartDashboard.getNumber("Slider 2", 0), SmartDashboard.getNumber("slider 3", 0));
 		drive.resetEncoders();
+		gyro.reset();
 	}
 	
 	// This function is called periodically during operator control (teleop)
@@ -76,7 +79,7 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		drive.teleopdrive(joyR.getRawAxis(1), joyL.getRawAxis(1));
 		if(joyL.getRawButton(1)) {
-			lifter.operate(-0.8);
+			lifter.operate(0);
 		}
 		
 		if (joyL.getRawButton(4)) {
@@ -86,12 +89,8 @@ public class Robot extends IterativeRobot {
 			drive.brakeMode(false);
 		}
 		if (joyR.getRawButton(1)) {
-			lifter.operate(0.8);
+			lifter.operate(0);
 		}
-		System.out.println("Gyro = " + gyro.getRawHeading());
-		System.out.println("Top = " + !lifter.trigTop.get());
-		System.out.println("Bottom = " + !lifter.trigBottom.get());
-		System.out.println("Switch = " + !lifter.trigSwitch.get());
 	}
 
 	@Override
@@ -101,8 +100,6 @@ public class Robot extends IterativeRobot {
 	// This function is called periodically during test modes
 	@Override
 	public void testPeriodic() {
-		System.out.println(gyro.getRawHeading());
-		System.out.println(gyro.getOffsetHeading());
 	}
 }
 

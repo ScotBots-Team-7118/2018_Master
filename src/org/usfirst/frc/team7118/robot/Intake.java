@@ -29,8 +29,19 @@ public class Intake {
 	 * Runs the intake system at a given velocity.
 	 * @param v
 	 */
-	public void run(double v) {
-		talIR.set(ControlMode.PercentOutput, v);
-		talIL.set(ControlMode.PercentOutput, -v);
+	public void run(int mode) {
+		if (mode == 0) {
+			talIR.set(ControlMode.PercentOutput, Scotstants.AUTO_INTAKE_SPEED);
+			talIL.set(ControlMode.PercentOutput, -Scotstants.AUTO_INTAKE_SPEED);
+		}
+		else {
+			talIR.set(ControlMode.PercentOutput, -Scotstants.AUTO_INTAKE_SPEED);
+			talIL.set(ControlMode.PercentOutput, Scotstants.AUTO_INTAKE_SPEED);
+		}
+	}
+	
+	public void stop() {
+		talIR.set(ControlMode.PercentOutput, 0);
+		talIL.set(ControlMode.PercentOutput, 0);
 	}
 }

@@ -15,6 +15,8 @@ public class Auto implements Scotstants {
 	/**
 	 * Constructs the autonomous class
 	 * @param drive
+	 * @param intake
+	 * @param lifter
 	 */
 	public Auto(Drive drive, Intake intake, Lifter lifter) {
 		this.drive = drive;
@@ -36,9 +38,9 @@ public class Auto implements Scotstants {
 		AUTO_THIRD_BREAK,
 		AUTO_SECOND_TURN,
 		AUTO_FOURTH_BREAK,
-		AUTO_THIRD_DIST,
-		AUTO_FIFTH_BREAK,
 		AUTO_RAISE_ARM,
+		AUTO_FIFTH_BREAK,
+		AUTO_THIRD_DIST,
 		AUTO_SIXTH_BREAK,
 		AUTO_DELIVER_CUBE,
 		AUTO_SEVENTH_BREAK
@@ -74,7 +76,7 @@ public class Auto implements Scotstants {
 	public void runSide(AutoPath position) {
 		switch(state) {
 		case AUTO_FIRST_DIST:
-			if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 >= Scotstants.AUTO_SIDE_DIST[0]) {
+			if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 > Scotstants.AUTO_SIDE_DIST[0]*Scotstants.ROTATIONS_TO_FEET) {
 				nextStep(AutoState.AUTO_FIRST_BREAK);
 			}
 			else {
@@ -88,19 +90,26 @@ public class Auto implements Scotstants {
 					if (scalePos == 'L') {
 						nextStep(AutoState.AUTO_SECOND_DIST);
 					}
+					else {
+						nextStep(AutoState.AUTO_SIXTH_BREAK);
+					}
 					break;
 				case RIGHT:
 					if (scalePos == 'R') {
 						nextStep(AutoState.AUTO_SECOND_DIST);
 					}
+					else {
+						nextStep(AutoState.AUTO_SIXTH_BREAK);
+					}
 					break;
 				case CENTER:
+					System.out.println("ERROR: Incorrect autonomous method selected.");
 					break;
 				}
 			}
 			break;
 		case AUTO_SECOND_DIST:
-			if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 >= Scotstants.AUTO_SIDE_DIST[1]) {
+			if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 > Scotstants.AUTO_SIDE_DIST[1]*Scotstants.ROTATIONS_TO_FEET) {
 				nextStep(AutoState.AUTO_SECOND_BREAK);
 			}
 			else {
@@ -125,6 +134,7 @@ public class Auto implements Scotstants {
 				}
 				break;
 			case CENTER:
+				System.out.println("ERROR: Incorrect autonomous selected.");
 				break;
 			}
 		case AUTO_THIRD_BREAK:
@@ -146,7 +156,7 @@ public class Auto implements Scotstants {
 			}
 			break;
 		case AUTO_THIRD_DIST:
-			if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 >= Scotstants.AUTO_SIDE_DIST[2]) {
+			if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 > Scotstants.AUTO_SIDE_DIST[2]*Scotstants.ROTATIONS_TO_FEET) {
 				nextStep(AutoState.AUTO_FIFTH_BREAK);
 			}
 			else {
@@ -161,34 +171,31 @@ public class Auto implements Scotstants {
 		case AUTO_DELIVER_CUBE:
 			if (timer.get() >= 2) {
 				nextStep(AutoState.AUTO_SIXTH_BREAK);
+				intake.stop();
 			}
 			else {
-				intake.run(Scotstants.AUTO_INTAKE_SPEED);
+				intake.run(1);
 			}
 			break;
 		case AUTO_SIXTH_BREAK:
 			timer.stop();
+			drive.stop();
 			break;
 		case AUTO_SECOND_TURN:
-			System.out.println("ERROR: Out of given autonomous sequence");
-			drive.gyroDrive(0);
+			System.out.println("ERROR: Out of given autonomous sequence.");
+			drive.stop();
+			timer.stop();
 			break;
 		case AUTO_SEVENTH_BREAK:
-			System.out.println("ERROR: Out of given autonomous sequence");
-			drive.gyroDrive(0);
+			System.out.println("ERROR: Out of given autonomous sequence.");
+			drive.stop();
+			timer.stop();
 			break;
 		}
 	}
-	
-	/**
-<<<<<<< HEAD
-=======
-	 * Runs the autonomous code for the given switch location (left or right)
-	 */
 
 	
 	/**
->>>>>>> origin/Auto_Ready_Code
 	 * Resets all necessary sensors and moves the autonomous progression to the given step
 	 * @param step
 	 */
@@ -201,6 +208,9 @@ public class Auto implements Scotstants {
 		timer.start();
 	}
 	
+	/**
+	 * Runs the auto code for the center
+	 */
 	public void runCenter() {
 		
 		switch (state) {
@@ -235,14 +245,14 @@ public class Auto implements Scotstants {
 			 */
 		case AUTO_FIRST_TURN:
 			// 90 degrees (left side)/270 degrees (right side)
-			if(String.valueOf(DriverStation.getInstance().getGameSpecificMessage().charAt(0)) == "L"){
-					if (drive.turn(90, 0.3)) {
+			if(DriverStation.getInstance().getGameSpecificMessage().charAt(0) == 'L'){
+					if (drive.turn(AUTO_CENTER_TURN[0], AUTO_MOVE_SPEED)) {
 						nextStep(AutoState.AUTO_SECOND_BREAK);
 					}
 					
 			}
 			else {
-				if(drive.turn(-90, 0.3)) {
+				if(drive.turn(-AUTO_CENTER_TURN[0], AUTO_MOVE_SPEED)) {
 					nextStep(AutoState.AUTO_SECOND_BREAK);
 				}
 			} 
@@ -267,11 +277,9 @@ public class Auto implements Scotstants {
 				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);}
 			else{
 				nextStep(AutoState.AUTO_THIRD_BREAK);
-
 			}
 			break;
 		
-	
 			/**
 			 * Code stops for 0.5 seconds and then continues 
 			 */
@@ -286,18 +294,19 @@ public class Auto implements Scotstants {
 			 */
 		case AUTO_SECOND_TURN:
 			// 90 degrees (left side)/270 degrees (right side)
-			if(String.valueOf(DriverStation.getInstance().getGameSpecificMessage().charAt(0)) == "L"){
-				if(drive.turn(90, 0.3)) {
-					nextStep(AutoState.AUTO_FOURTH_BREAK);
-					}
+			if(DriverStation.getInstance().getGameSpecificMessage().charAt(0) == 'L'){
+				if (drive.turn(AUTO_CENTER_TURN[1], AUTO_MOVE_SPEED)) {
+					nextStep(AutoState.AUTO_SECOND_BREAK);
+				}
+				
+		}
+		else {
+			if(drive.turn(-AUTO_CENTER_TURN[1], AUTO_MOVE_SPEED)) {
+				nextStep(AutoState.AUTO_SECOND_BREAK);
 			}
-			else {
-				if(drive.turn(270, 0.3)) {
-					nextStep(AutoState.AUTO_FOURTH_BREAK);
-					}
-			} 
-			break;
-			
+		} 
+		break;
+
 		case AUTO_FOURTH_BREAK:
 			// Note:add checks and balances if possible 
 			if(timer.get() >= 0.5) {
@@ -312,11 +321,10 @@ public class Auto implements Scotstants {
 			if(lifter.atSwitch()) {
 				nextStep(AutoState.AUTO_FIFTH_BREAK);
 			}
-			else{
+			else {
 				lifter.operate(Scotstants.AUTO_LIFTING_SPEED);
 			}
 			break;
-			
 			
 			/**
 			 * Code stops for 0.5 seconds and them moves on 
@@ -356,6 +364,10 @@ public class Auto implements Scotstants {
 			// reverse intake motors to eject cube (go slow)
 			if(timer.get() >= 2) {
 				nextStep(AutoState.AUTO_SEVENTH_BREAK);
+				intake.stop();
+			}
+			else {
+				intake.run(1);
 			}
 			/**
 			 * End of center auto code 
@@ -363,10 +375,11 @@ public class Auto implements Scotstants {
 			 */
 		case AUTO_SEVENTH_BREAK:
 			// break
-			drive.gyroDrive(0);
+			drive.stop();
 			timer.stop();
 		}
 	}
+	
 	/**
 	 * Resets the autonomous progression
 	 */
