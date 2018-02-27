@@ -182,16 +182,16 @@ public class Drive {
 	 */
 	public void teleopdrive(double joyR, double joyL) {
 		if (joyR >= 0.2) {
-			setRight(Math.pow(joyR, 2));
+			setRight(0.6*Math.pow(joyR, 2));
 		} else if (joyR <= -0.2) {
-			setRight(-(Math.pow(joyR, 2)));
+			setRight(-(0.6*Math.pow(joyR, 2)));
 		} else {
 			setRight(0);
 		}
 		if (joyL >= 0.2) {
-			setLeft(Math.pow(joyL, 2));
+			setLeft(0.6*Math.pow(joyL, 2));
 		} else if (joyL <= -0.2) {
-			setLeft(-(Math.pow(joyL, 2)));
+			setLeft(-(0.6*Math.pow(joyL, 2)));
 		} else {
 			setLeft(0);
 		}

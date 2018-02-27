@@ -6,8 +6,8 @@ public interface Scotstants {
 	public final int TALON_LF_PORT = 8;
 	public final int TALON_RM_PORT = 4;
 	public final int TALON_RF_PORT = 5;
-	public final int TALON_A1_PORT = 0;
-	public final int TALON_A2_PORT = 0;
+	public final int TALON_A1_PORT = 1;
+	public final int TALON_A2_PORT = 9;
 	public final int TALON_IR_PORT = 0;
 	public final int TALON_IL_PORT = 0;
 
@@ -26,7 +26,7 @@ public interface Scotstants {
 	public enum AutoPath {CENTER, LEFT, RIGHT};
 	public final double AUTO_LIFTING_SPEED = 0.2;
 	public final double AUTO_INTAKE_SPEED = 0.2;
-	public final double GYRO_DEAD_ZONE = 0.75;
+	public final double GYRO_DEAD_ZONE = 0.25;
 	
 	// The amount of rotations in a single foot
 	public final double ROTATIONS_TO_FEET = 0;

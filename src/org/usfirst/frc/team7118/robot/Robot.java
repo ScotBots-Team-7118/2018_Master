@@ -1,5 +1,6 @@
 package org.usfirst.frc.team7118.robot;
 
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
@@ -23,7 +24,7 @@ public class Robot extends IterativeRobot {
 	Joystick joyR, joyL;
 //	Auto auto;
 	Gyroscope gyro;
-	Intake intake;
+//	Intake intake;
 	Lifter lifter;
 	SendableChooser<Scotstants.AutoPath> autoChooser;
 	
@@ -43,6 +44,7 @@ public class Robot extends IterativeRobot {
 		autoChooser.addObject("Left", Scotstants.AutoPath.LEFT);
 		autoChooser.addObject("Right", Scotstants.AutoPath.RIGHT);
 		SmartDashboard.putData("Auto Mode Chooser", autoChooser);
+		CameraServer.getInstance().startAutomaticCapture();
 	}
 
 	// This function is run immediately before autonomousPeriodic()
@@ -73,8 +75,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		drive.teleopdrive(joyR.getRawAxis(1), joyL.getRawAxis(1));
-		if(joyR.getRawButton(1)) {
-			drive.gyroDrive(0.1);
+		if(joyL.getRawButton(1)) {
+			lifter.operate(-0.8);
 		}
 		
 		if (joyL.getRawButton(4)) {
@@ -82,6 +84,9 @@ public class Robot extends IterativeRobot {
 		}
 		if (joyR.getRawButton(4)) {
 			drive.brakeMode(false);
+		}
+		if (joyR.getRawButton(1)) {
+			lifter.operate(0.8);
 		}
 		System.out.println("Gyro = " + gyro.getRawHeading());
 		System.out.println("Top = " + !lifter.trigTop.get());

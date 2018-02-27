@@ -40,11 +40,11 @@ public class Lifter {
 	public void operate(double v) {
 		double outputVelocity;
 		if (trigBottom.get()) {
-			if (v > 0) outputVelocity = v;
+			if (v > 0) outputVelocity = -v;
 			else outputVelocity = 0;
 		}
 		else if (trigTop.get()) {
-			if (v < 0) outputVelocity = v;
+			if (v < 0) outputVelocity = -v;
 			else outputVelocity = 0;
 		}
 		else outputVelocity = v;
