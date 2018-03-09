@@ -1,6 +1,7 @@
 package org.usfirst.frc.team7118.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -31,6 +32,8 @@ public class Lifter {
 		trigTop = new DigitalInput(9);
 		trigBottom = new DigitalInput(8);
 		trigSwitch = new DigitalInput(7);
+		talA1.setNeutralMode(NeutralMode.Brake);
+		talA2.setNeutralMode(NeutralMode.Brake);
 	}
 	
 	/**
@@ -38,16 +41,16 @@ public class Lifter {
 	 * @param v
 	 */
 	public void operate(double v) {
-		double outputVelocity;
-		if (trigBottom.get()) {
-			if (v > 0) outputVelocity = -v;
-			else outputVelocity = 0;
-		}
-		else if (trigTop.get()) {
-			if (v < 0) outputVelocity = -v;
-			else outputVelocity = 0;
-		}
-		else outputVelocity = v;
+		double outputVelocity = -v;
+//		if (atBottom()) {
+//			if (v > 0) outputVelocity = -v;
+//			else outputVelocity = 0;
+//		}
+//		else if (atScale()) {
+//			if (v < 0) outputVelocity = -v;
+//			else outputVelocity = 0;
+//		}
+//		else outputVelocity = v;
 		talA1.set(ControlMode.PercentOutput, outputVelocity);
 		talA2.set(ControlMode.PercentOutput, outputVelocity);
 	}
@@ -58,6 +61,10 @@ public class Lifter {
 	 */
 	public boolean atSwitch() {
 		return !trigSwitch.get();
+	}
+	
+	public boolean atBottom() {
+		return !trigBottom.get();
 	}
 	
 	/**
