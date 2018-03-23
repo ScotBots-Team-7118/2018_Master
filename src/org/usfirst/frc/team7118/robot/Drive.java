@@ -33,6 +33,7 @@ public class Drive {
 	Gyroscope gyro;
 	TalonSRX talLM, talLF, talRM, talRF;
 	double initEncLeft, initEncRight;
+	boolean straight;
 	
 	/**
 	 * Constructs a new Drive Object.
@@ -59,8 +60,8 @@ public class Drive {
 		talRM.setSensorPhase(true);
 		
 		// Defines init encLeft and encRight values for the normalized encoder values
-		initEncLeft = talLM.getSelectedSensorPosition(0);
-		initEncRight = talRM.getSelectedSensorPosition(0);
+		resetEncoders();
+		
 	}
 
 	/**
@@ -86,7 +87,7 @@ public class Drive {
 	 * @param kI
 	 * @param kD
 	 */
-	public void pidControl(double kF, double kP, double kI, double kD) {
+	public void pidControl(double kP, double kI, double kD, double kF) {
 		talLM.config_kF(0, kF, 0);
 		talLM.config_kP(0, kP, 0);
 		talLM.config_kI(0, kI, 0);
@@ -300,6 +301,16 @@ public class Drive {
 			setLeft(v);
 			setRight(v);
 		}
-	}
+		
 }
-
+	public boolean driveStraight(int dist) {
+		gyroDrive(Scotstants.AUTO_MOVE_SPEED);
+		if((getNormalizedPositionL() + getNormalizedPositionR())/2 < (dist * Scotstants.ROTATIONS_TO_FEET) ) {
+			return false;
+			}
+		else {
+			return true;
+			}
+		}
+	
+}

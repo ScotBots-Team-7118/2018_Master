@@ -9,9 +9,11 @@ public class Auto implements Scotstants {
 	Drive drive;
 	Intake intake;
 	Lifter lifter;
-	char switchPos, scalePos;
+	char switchPos = 'L', scalePos;
 	AutoState state;
 	Timer timer;
+	SidePath path;
+	
 	
 	/**
 	 * Constructs the autonomous class
@@ -47,6 +49,11 @@ public class Auto implements Scotstants {
 		AUTO_SEVENTH_BREAK
 	}
 	
+	public enum SidePath{
+		SC,
+		SW,
+		LN
+	}
 	/**
 	 * Parses game data for autonomous in order to determine priorities for the robot
 	 */
@@ -68,8 +75,26 @@ public class Auto implements Scotstants {
 			runCenter();
 		case LEFT:
 			runSide(AutoPath.LEFT);
+			if (scalePos == 'L') {
+				path = SidePath.SC;
+			}
+			else if (switchPos == 'L') {
+				path = SidePath.SW;
+			}
+			else {
+				path = SidePath.LN;
+			}
 		case RIGHT:
 			runSide(AutoPath.RIGHT);
+			if (scalePos == 'R') {
+				path = SidePath.SC;
+			}
+			else if (switchPos == 'R') {
+				path = SidePath.SW;
+			}
+			else {
+				path = SidePath.LN;
+			}
 		}
 	}
 	
@@ -78,167 +103,210 @@ public class Auto implements Scotstants {
 	 * @param position
 	 */
 	public void runSide(AutoPath position) {
-		// Creates a state engine for the state of autonomous
+		// Creates a state engine for the state of autonomous.
 		switch(state) {
-		
 		case AUTO_FIRST_DIST:
-			// Checks if the average displacement of the two sides of the drive train is greater than the first autonomous distance
-			if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 > Scotstants.AUTO_SIDE_DIST[0]*Scotstants.ROTATIONS_TO_FEET) {
-				// If so, go to the next step
-				nextStep(AutoState.AUTO_FIRST_BREAK);
+			switch(path) {
+			case SC:
+				// If the robot has traveled the first distance (according to the encoders), go to the next step.
+				if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 > Scotstants.AUTO_SIDE_D1[0]*Scotstants.ROTATIONS_TO_FEET) {
+					nextStep(AutoState.AUTO_FIRST_BREAK);
+				}
+				else {
+					// Otherwise, drive the robot forward.
+					drive.move(Scotstants.AUTO_MOVE_SPEED);
+				}
+				break;
+				
+			case SW:
+				// If the robot has traveled the first distance (according to the encoders), go to the next step.
+				if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 > Scotstants.AUTO_SIDE_D1[1]*Scotstants.ROTATIONS_TO_FEET) {
+					nextStep(AutoState.AUTO_FIRST_BREAK);
+				}
+				else {
+					// Otherwise, drive the robot forward.
+					drive.move(Scotstants.AUTO_MOVE_SPEED);
+				}
+				break;
+				
+			case LN:
+				// If the robot has traveled the first distance (according to the encoders), go to the next step.
+				if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 > Scotstants.AUTO_SIDE_D1[2]*Scotstants.ROTATIONS_TO_FEET) {
+					nextStep(AutoState.AUTO_FIRST_BREAK);
+				}
+				else {
+					// Otherwise, drive the robot forward.
+					drive.move(Scotstants.AUTO_MOVE_SPEED);
+				}
+				break;
 			}
-			else {
-				// Otherwise, drive the robot forward using the gyro
-				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);
-			}
-			break;
 			
 		case AUTO_FIRST_BREAK:
-			// Checks if 0.5 seconds have passed since the last step ended
+			// Checks if 0.5 seconds have passed since the last step ended.
 			if (timer.get() >= 0.5) {
-				// If so, select the next step based on the position of the scale.
-				// If the scale is on the same side, start the progression to deliver a cube to the scale
-				// Otherwise, stop here.
-				switch(position) {
-				case LEFT:
-					if (scalePos == 'L') {
-						nextStep(AutoState.AUTO_SECOND_DIST);
-					}
-					else {
-						nextStep(AutoState.AUTO_SIXTH_BREAK);
-					}
+				switch(path) {
+				// If the priority is on scale or switch, go to the next distance.
+				case SC:
+					nextStep(AutoState.AUTO_FIRST_TURN);
 					break;
 					
-				case RIGHT:
-					if (scalePos == 'R') {
-						nextStep(AutoState.AUTO_SECOND_DIST);
-					}
-					else {
-						nextStep(AutoState.AUTO_SIXTH_BREAK);
-					}
+				case SW:
+					nextStep(AutoState.AUTO_FIRST_TURN);
 					break;
 					
-				case CENTER:
-					// If something went wrong, print to the DS and stop the code
-					System.out.println("ERROR: Incorrect autonomous method selected.");
-					timer.stop();
-					drive.stop();
+				// If the priority is on crossing the autonomous line, stop here.
+				case LN:
+					nextStep(AutoState.AUTO_FIFTH_BREAK);
 					break;
 				}
-			}
-			break;
-			
-		case AUTO_SECOND_DIST:
-			// Checks if the average displacement of both sides of the drive train are greater than the second autonomous distance.
-			if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 > Scotstants.AUTO_SIDE_DIST[1]*Scotstants.ROTATIONS_TO_FEET) {
-				// If so, go to the next step
-				nextStep(AutoState.AUTO_SECOND_BREAK);
-			}
-			else {
-				// Otherwise, drive the robot using the gyro.
-				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);
-			}
-			break;
-			
-		case AUTO_SECOND_BREAK:
-			// If 0.5 seconds have passed since the last step ended, move to the next step
-			if (timer.get() >= 0.5) {
-				nextStep(AutoState.AUTO_FIRST_TURN);
 			}
 			break;
 			
 		case AUTO_FIRST_TURN:
 			// Begin to turn the robot the appropriate amount of degrees,
-			// then if it's done turning, move to the next step
+			// then if it's done turning, move to the next step.
 			switch(position) {
 			case LEFT:
-				if (drive.turn(Scotstants.AUTO_SIDE_TURN[0], Scotstants.AUTO_MOVE_SPEED)) {
-					nextStep(AutoState.AUTO_THIRD_BREAK);
+				// Turns the robot, then checks if it has finished turning.
+				if (drive.turn(Scotstants.AUTO_SIDE_TURN[0], Scotstants.AUTO_TURN_SPEED)) {
+					nextStep(AutoState.AUTO_SECOND_BREAK);
 				}
 				break;
 			case RIGHT:
-				if (drive.turn(Scotstants.AUTO_SIDE_TURN[1], Scotstants.AUTO_MOVE_SPEED)) {
-					nextStep(AutoState.AUTO_THIRD_BREAK);
+				if (drive.turn(Scotstants.AUTO_SIDE_TURN[1], Scotstants.AUTO_TURN_SPEED)) {
+					nextStep(AutoState.AUTO_SECOND_BREAK);
 				}
 				break;
 			case CENTER:
-				// If something went wrong, print to the DS and stop the code
+				// If something went wrong, print to the DS and stop the code.
 				System.out.println("ERROR: Incorrect autonomous selected.");
 				timer.stop();
 				drive.stop();
 				break;
 			}
-		case AUTO_THIRD_BREAK:
-			// If 0.5 seconds have passed since the last step ended, move to the next step
+			
+		case AUTO_SECOND_BREAK:
+			// If 0.5 seconds have passed since the last step ended, move to the next step.
 			if (timer.get() >= 0.5) {
 				nextStep(AutoState.AUTO_RAISE_ARM);
 			}
 			break;
 			
 		case AUTO_RAISE_ARM:
-			// If the lifter is at the scale position, move to the next step
-			if (lifter.atScale()) {
-				nextStep(AutoState.AUTO_FOURTH_BREAK);
+			switch(path) {
+			// If the priority is on the scale, raise the arm to the scale height and then go to the next step.
+			case SC:
+				if (lifter.atScale()) {
+					nextStep(AutoState.AUTO_THIRD_BREAK);
+				}
+				else {
+					lifter.operate(1);
+				}
+				break;
+				
+			// If the priority is on the switch, raise the arm to the switch height and then go the next step.
+			case SW:
+				if (lifter.atSwitch()) {
+					nextStep(AutoState.AUTO_THIRD_BREAK);
+				}
+				else {
+					lifter.operate(1);
+				}
+				break;
+				
+			case LN:
+				// If the code somehow got to this point, print to the DS and stop the code.
+				System.out.println("ERROR: Autonomous Sequence Failed.");
+				nextStep(AutoState.AUTO_FIFTH_BREAK);
+				break;
 			}
-			else {
-				// Otherwise, move the lifter up
-				lifter.operate(Scotstants.AUTO_LIFTING_SPEED);
-			}
-			break;
 			
-		case AUTO_FOURTH_BREAK:
+		case AUTO_THIRD_BREAK:
 			// If 0.5 seconds have passed since the last step ended, move to the next step
 			if (timer.get() >= 0.5) {
-				nextStep(AutoState.AUTO_THIRD_DIST);
+				nextStep(AutoState.AUTO_SECOND_DIST);
 			}
 			break;
 			
-		case AUTO_THIRD_DIST:
-			// Checks if the average displacement of the two sides of the drive train is greater than the third autonomous distance
-			if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 > Scotstants.AUTO_SIDE_DIST[2]*Scotstants.ROTATIONS_TO_FEET) {
-				// If so, move to the next step
+		case AUTO_SECOND_DIST:
+			switch(path) {
+			case SC:
+				// Goes to the next step if the robot has traveled the first distance according to the encoders.
+				if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 > Scotstants.AUTO_SIDE_D2[0]*Scotstants.ROTATIONS_TO_FEET) {
+					nextStep(AutoState.AUTO_FOURTH_BREAK);
+				}
+				else {
+					// Otherwise, drives the robot forward.
+					drive.move(Scotstants.AUTO_MOVE_SPEED);
+				}
+				break;
+				
+			case SW:
+				// Goes to the next step if the robot has traveled the first distance according to the encoders.
+				if ((drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 > Scotstants.AUTO_SIDE_D2[1]*Scotstants.ROTATIONS_TO_FEET) {
+					nextStep(AutoState.AUTO_FOURTH_BREAK);
+				}
+				else {
+					// Otherwise, drive the robot forward.
+					drive.move(Scotstants.AUTO_MOVE_SPEED);
+				}
+				break;
+				
+			case LN:
+				System.out.println("ERROR: Autonomous Sequence Failed.");
 				nextStep(AutoState.AUTO_FIFTH_BREAK);
+				break;
 			}
-			else {
-				// Otherwise, drive the robot using the gyro
-				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);
-			}
-			break;
 			
-		case AUTO_FIFTH_BREAK:
-			// If 0.5 seconds have passed since the end of the last step, move to the next step
+		case AUTO_FOURTH_BREAK:
+			// If 0.5 seconds have passed since the last step ended, move to the next step.
 			if (timer.get() >= 0.5) {
 				nextStep(AutoState.AUTO_DELIVER_CUBE);
 			}
 			break;
 			
 		case AUTO_DELIVER_CUBE:
-			if (timer.get() >= 2) {
-				// If two seconds have passed since this step started, move to the next step
-				nextStep(AutoState.AUTO_SIXTH_BREAK);
-				intake.stop();
-			}
-			else {
-				// Otherwise, run the intake so that the cube is spit out
-				intake.run(1);
-			}
+//			if (timer.get() >= 2) {
+//				// If two seconds have passed since this step started, move to the next step.
+				nextStep(AutoState.AUTO_FIFTH_BREAK);
+//				intake.stop();
+//			}
+//			else {
+//				// Otherwise, run the intake so that the cube is spit out.
+//				intake.run(1);
+//			}
 			break;
-			
-		case AUTO_SIXTH_BREAK:
-			// Stop the timer and stop the robot from moving
-			// This is the final step in the side autonomous sequence
+		
+		case AUTO_FIFTH_BREAK:
+			// Stop the timer and stop the robot from moving.
+			// This is the final step in the side autonomous sequence!
 			timer.stop();
 			drive.stop();
 			break;
-			
-		case AUTO_SECOND_TURN:
-			// If there was an error and the code reached this step, print to the DS and stop the code
+		
+		case AUTO_SIXTH_BREAK:
+			// If there was an error and the code reached this step, print to the DS and stop the code.
 			System.out.println("ERROR: Out of given autonomous sequence.");
 			drive.stop();
 			timer.stop();
 			break;
+			
+		case AUTO_SECOND_TURN:
+			// If there was an error and the code reached this step, print to the DS and stop the code.
+			System.out.println("ERROR: Out of given autonomous sequence.");
+			drive.stop();
+			timer.stop();
+			break;
+			
 		case AUTO_SEVENTH_BREAK:
-			// If there was an error and the code reached this step, print to the DS and stop the code
+			// If there was an error and the code reached this step, print to the DS and stop the code.
+			System.out.println("ERROR: Out of given autonomous sequence.");
+			drive.stop();
+			timer.stop();
+			break;
+			
+		case AUTO_THIRD_DIST:
+			// If there was an error and the code reached this step, printo to the DS and stop the code.
 			System.out.println("ERROR: Out of given autonomous sequence.");
 			drive.stop();
 			timer.stop();
@@ -260,7 +328,7 @@ public class Auto implements Scotstants {
 			// actual dist = 10.4, give 10 instead to give leeway
 			//take average encoder values and compares them to values we want 
 			if( (drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 < AUTO_CENTER_DIST[0]*Scotstants.ROTATIONS_TO_FEET) { 
-				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);
+				drive.move(Scotstants.AUTO_MOVE_SPEED);
 			}
 			// once the above statement is no longer switch to the next step
 			else{
@@ -284,13 +352,13 @@ public class Auto implements Scotstants {
 		case AUTO_FIRST_TURN:
 			// 90 degrees (left side)/270 degrees (right side)
 			if(switchPos == 'L'){
-					if (drive.turn(AUTO_CENTER_TURN[0], AUTO_MOVE_SPEED)) {
+					if (drive.turn(AUTO_CENTER_TURN[0], AUTO_TURN_SPEED)) {
 						nextStep(AutoState.AUTO_SECOND_BREAK);
 					}
 					
 			}
 			else {
-				if(drive.turn(-AUTO_CENTER_TURN[0], AUTO_MOVE_SPEED)) {
+				if(drive.turn(-AUTO_CENTER_TURN[0], AUTO_TURN_SPEED)) {
 					nextStep(AutoState.AUTO_SECOND_BREAK);
 				}
 			} 
@@ -312,7 +380,7 @@ public class Auto implements Scotstants {
 			 */
 		case AUTO_SECOND_DIST:
 			if( (drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 < AUTO_CENTER_DIST[1]*Scotstants.ROTATIONS_TO_FEET) { 
-				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);}
+				drive.move(Scotstants.AUTO_MOVE_SPEED);}
 			else{
 				nextStep(AutoState.AUTO_THIRD_BREAK);
 			}
@@ -333,14 +401,14 @@ public class Auto implements Scotstants {
 		case AUTO_SECOND_TURN:
 			// 90 degrees (left side)/270 degrees (right side)
 			if(switchPos == 'L'){
-				if (drive.turn(AUTO_CENTER_TURN[1], AUTO_MOVE_SPEED)) {
-					nextStep(AutoState.AUTO_SECOND_BREAK);
+				if (drive.turn(AUTO_CENTER_TURN[1], AUTO_TURN_SPEED)) {
+					nextStep(AutoState.AUTO_FOURTH_BREAK);
 				}
 				
 		}
 		else {
-			if(drive.turn(-AUTO_CENTER_TURN[1], AUTO_MOVE_SPEED)) {
-				nextStep(AutoState.AUTO_SECOND_BREAK);
+			if(drive.turn(-AUTO_CENTER_TURN[1], AUTO_TURN_SPEED)) {
+				nextStep(AutoState.AUTO_FOURTH_BREAK);
 			}
 		} 
 		break;
@@ -360,7 +428,7 @@ public class Auto implements Scotstants {
 				nextStep(AutoState.AUTO_FIFTH_BREAK);
 			}
 			else {
-				lifter.operate(Scotstants.AUTO_LIFTING_SPEED);
+				lifter.operate(1);
 			}
 			break;
 			
@@ -379,47 +447,40 @@ public class Auto implements Scotstants {
 			 */
 		case AUTO_THIRD_DIST:
 			if( (drive.getNormalizedPositionL() + drive.getNormalizedPositionR())/2 < AUTO_CENTER_DIST[2]*Scotstants.ROTATIONS_TO_FEET) { 
-				drive.gyroDrive(Scotstants.AUTO_MOVE_SPEED);
+				drive.move(Scotstants.AUTO_MOVE_SPEED);
 			}
 			else{
 				nextStep(AutoState.AUTO_SIXTH_BREAK);
 			}
 			break;
 			
-			/**
-			 * Code stops for 0.5 seconds and them moves on 
-			 */
+		// 
 		case AUTO_SIXTH_BREAK:
 			if(timer.get() >= 0.5) {
 				nextStep(AutoState.AUTO_DELIVER_CUBE);
 			}
 			break;
 			
-			/**
-			 * Robot delivers cube 
-			 */
+		// Runs the intake system for 2 seconds to deliver a cube
 		case AUTO_DELIVER_CUBE:
-			// reverse intake motors to eject cube (go slow)
-			if(timer.get() >= 2) {
+//			if(timer.get() >= 2) {
 				nextStep(AutoState.AUTO_SEVENTH_BREAK);
-				intake.stop();
-			}
-			else {
-				intake.run(1);
-			}
-			/**
-			 * End of center auto code 
-			 * robot stops everything resets 
-			 */
+//				intake.stop();
+//			}
+//			else {
+//				intake.run(1);
+//			}
+		
 		case AUTO_SEVENTH_BREAK:
-			// break
+			// Stop the robot and stay where it is until teleop.
+			// This is the final step in autonomous!
 			drive.stop();
 			timer.stop();
 		}
 	}
 	
 	/**
-	 * Resets all necessary sensors and moves the autonomous progression to the given step
+	 * Resets all necessary sensors and moves the autonomous progression to the given step.
 	 * @param step
 	 */
 	public void nextStep(AutoState step) {
@@ -429,12 +490,18 @@ public class Auto implements Scotstants {
 		drive.stop();
 		timer.reset();
 		timer.start();
+		lifter.stop();
+		intake.stop();
 	}
 	
 	/**
-	 * Resets the autonomous progression
+	 * Resets the autonomous progression.
 	 */
 	public void reset() {
-		state = AutoState.AUTO_FIRST_DIST;
+		// Resets all necessary sensors for the first step in autnomous.
+		nextStep(AutoState.AUTO_FIRST_DIST);
+		// Sets the values for PIDf for driving.
+		drive.pidControl(0.27, 0.0225, 0.0025, 0);
 	}
+	
 }

@@ -40,19 +40,29 @@ public class Lifter {
 	 * Operates the lifter for a given velocity
 	 * @param v
 	 */
-	public void operate(double v) {
-		double outputVelocity = -v;
-//		if (atBottom()) {
-//			if (v > 0) outputVelocity = -v;
-//			else outputVelocity = 0;
-//		}
-//		else if (atScale()) {
-//			if (v < 0) outputVelocity = -v;
-//			else outputVelocity = 0;
-//		}
-//		else outputVelocity = v;
+	public void operate(int direction) {
+		double outputVelocity = 0;
+		if (direction != 1 && direction != -1) {
+			System.out.println("ERROR: Lifting function used incorrectly");
+			stop();
+		}
+		else if (atBottom() && direction == -1) {
+			outputVelocity = 0;
+		}
+		else if (atScale() && direction == 1) {
+			outputVelocity = 0;
+		}
+		else if (direction == 1) outputVelocity = -Scotstants.AUTO_LIFTING_SPEED;
+		else outputVelocity = Scotstants.AUTO_LIFTING_SPEED;
+		
 		talA1.set(ControlMode.PercentOutput, outputVelocity);
 		talA2.set(ControlMode.PercentOutput, outputVelocity);
+	}
+	
+	public void stop() {
+		talA1.set(ControlMode.PercentOutput, 0);
+		talA2.set(ControlMode.PercentOutput, 0);
+		
 	}
 	
 	/**
