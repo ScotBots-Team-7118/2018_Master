@@ -1,6 +1,7 @@
 package org.usfirst.frc.team7118.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -31,25 +32,37 @@ public class Lifter {
 		trigTop = new DigitalInput(9);
 		trigBottom = new DigitalInput(8);
 		trigSwitch = new DigitalInput(7);
+		talA1.setNeutralMode(NeutralMode.Brake);
+		talA2.setNeutralMode(NeutralMode.Brake);
 	}
 	
 	/**
 	 * Operates the lifter for a given velocity
 	 * @param v
 	 */
-	public void operate(double v) {
-		double outputVelocity;
-		if (trigBottom.get()) {
-			if (v > 0) outputVelocity = -v;
-			else outputVelocity = 0;
+	public void operate(int direction) {
+		double outputVelocity = 0;
+		if (direction != 1 && direction != -1) {
+			System.out.println("ERROR: Lifting function used incorrectly");
+			stop();
 		}
-		else if (trigTop.get()) {
-			if (v < 0) outputVelocity = -v;
-			else outputVelocity = 0;
+		else if (atBottom() && direction == -1) {
+			outputVelocity = 0;
 		}
-		else outputVelocity = v;
+		else if (atScale() && direction == 1) {
+			outputVelocity = 0;
+		}
+		else if (direction == 1) outputVelocity = -Scotstants.AUTO_LIFTING_SPEED;
+		else outputVelocity = Scotstants.AUTO_LIFTING_SPEED;
+		
 		talA1.set(ControlMode.PercentOutput, outputVelocity);
 		talA2.set(ControlMode.PercentOutput, outputVelocity);
+	}
+	
+	public void stop() {
+		talA1.set(ControlMode.PercentOutput, 0);
+		talA2.set(ControlMode.PercentOutput, 0);
+		
 	}
 	
 	/**
@@ -58,6 +71,10 @@ public class Lifter {
 	 */
 	public boolean atSwitch() {
 		return !trigSwitch.get();
+	}
+	
+	public boolean atBottom() {
+		return !trigBottom.get();
 	}
 	
 	/**

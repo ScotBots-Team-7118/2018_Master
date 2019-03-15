@@ -1,15 +1,5 @@
 package org.usfirst.frc.team7118.robot;
 
-/*
- * public Drive(Gyroscope gyro) - Constructs a new Drive Object
- * public void setRight(double amountR) - Sets the right side talons to a given value
- * public void setLeft(double amountL) - Sets the left side talons to a given value
- * public void stop()- Sets talons on both sides to 0
- * public void brakeMode(boolean mode)- Configures brake mode on the talons 
- * public void move(double moving)- Sets talons on both sides to the same value 
- * public boolean turn(double angle, double maxSpeed) - Turns the robot a set amount of degrees
- */
-
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -26,6 +16,7 @@ import org.usfirst.frc.team7118.robot.Scotstants;
  * public double getNormalizedPositionR() - Fetches the distance traveled by the right side since the last reset (in rotations).
  * public void pidControl(double kF, double kP, double kI, double kD) - Applies a PIDF filter to the talon speeds.
  * public void resetGyro() - Resets the gyroscope.
+ * public double normalizeAcceleration(double currentPower, double desiredPower) - Normalizes the voltage input to the talons so that the robot doesn't accelerate or decelerate too rapidly.
  * public void resetEncoders() - Resets the encoder distances for the normalized positions.
  * public void setRight(double amountR) - Sets the right side talons to a given value.
  * public void setLeft(double amountL) - Sets the left side talons to a given value.
@@ -34,19 +25,22 @@ import org.usfirst.frc.team7118.robot.Scotstants;
  * public void brakeMode(boolean mode)- Configures brake mode on the talons.
  * public void move(double moving)- Sets talons on both sides to the same value.
  * public boolean turn(double angle, double maxSpeed) - Turns the robot a set amount of degrees.
+ * public void gyroDrive(double v) - Drives the robot in accordance with the gyro heading.
  */
 
 public class Drive {
-	// Defines needed objects
+	// Defines Objects/Variables
 	Gyroscope gyro;
 	TalonSRX talLM, talLF, talRM, talRF;
 	double initEncLeft, initEncRight;
+	boolean straight;
 	
 	/**
 	 * Constructs a new Drive Object.
 	 * @param gyro
 	 */
 	public Drive(Gyroscope gyro) {
+		// Initializes pointer for gyro object
 		this.gyro = gyro;
 		// Initializes Drive Talons
 		talLM = new TalonSRX(Scotstants.TALON_LM_PORT);
@@ -54,16 +48,20 @@ public class Drive {
 		talRM = new TalonSRX(Scotstants.TALON_RM_PORT);
 		talRF = new TalonSRX(Scotstants.TALON_RF_PORT);
 		
+		// Sets the brake mode on the drive talons to coast
 		brakeMode(false);
 			
+		// Conifgures the encoders for the master talons
 		talLM.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		talRM.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
 		
+		// Turns on the encoders for the master talons
 		talLM.setSensorPhase(true);
 		talRM.setSensorPhase(true);
 		
-		initEncLeft = talLM.getSelectedSensorPosition(0);
-		initEncRight = talRM.getSelectedSensorPosition(0);
+		// Defines init encLeft and encRight values for the normalized encoder values
+		resetEncoders();
+		
 	}
 
 	/**
@@ -79,7 +77,7 @@ public class Drive {
 	 * @return
 	 */
 	public double getNormalizedPositionR() {
-		return talRM.getSelectedSensorPosition(0) - initEncRight;
+		return -talRM.getSelectedSensorPosition(0) + initEncRight;
 	}
 	
 	/**
@@ -89,7 +87,7 @@ public class Drive {
 	 * @param kI
 	 * @param kD
 	 */
-	public void pidControl(double kF, double kP, double kI, double kD) {
+	public void pidControl(double kP, double kI, double kD, double kF) {
 		talLM.config_kF(0, kF, 0);
 		talLM.config_kP(0, kP, 0);
 		talLM.config_kI(0, kI, 0);
@@ -117,11 +115,24 @@ public class Drive {
 	}
 	
 	/**
+	 * Normalizes the voltage input to the talons so that
+	 * the robot doesn't accelerate or decelerate too rapidly.
+	 * @param currentPower
+	 * @param desiredPower
+	 * @return
+	 */
+	public double normalizeAcceleration(double currentPower, double desiredPower) {
+		if (currentPower > desiredPower) {
+			return currentPower - Math.min(Scotstants.MAX_POWER_CHANGE, Math.abs(desiredPower-currentPower));
+		}
+		else return currentPower + Math.min(Scotstants.MAX_POWER_CHANGE, Math.abs(desiredPower-currentPower));
+	}
+	
+	/**
 	 * Sets the right side talons to a given value.
 	 * @param amountR
 	 */
 	public void setRight(double amountR) {
-		// set right side drive
 		talRM.set(ControlMode.PercentOutput, amountR);
 		talRF.set(ControlMode.Follower, Scotstants.TALON_RM_PORT);
 	}
@@ -131,7 +142,6 @@ public class Drive {
 	 * @param amountL
 	 */
 	public void setLeft(double amountL) {
-		// set left side drive
 		talLM.set(ControlMode.PercentOutput, -amountL);
 		talLF.set(ControlMode.Follower, Scotstants.TALON_LM_PORT);
 	}
@@ -141,16 +151,14 @@ public class Drive {
 	 * @param moving
 	 */
 	public void move(double moving) {
-		// forward moving function
-		setLeft(moving);
-		setRight(moving);
+		setLeft(-moving);
+		setRight(-moving);
 	}
 	
 	/** 
 	 * Sets talons on both sides to 0.
 	 */
 	public void stop() {
-		//stop both motors
 		setRight(0);
 		setLeft(0);
 	}
@@ -176,27 +184,45 @@ public class Drive {
 	}
 	
 	/**
-	 * Drives the robot with parabolic control according to 2 joystick values.
+	 * Drives the robot according to 2 joystick values.
 	 * @param joyR
 	 * @param joyL
 	 */
 	public void teleopdrive(double joyR, double joyL) {
-		if (joyR >= 0.2) {
-			setRight(0.6*Math.pow(joyR, 2));
-		} else if (joyR <= -0.2) {
-			setRight(-(0.6*Math.pow(joyR, 2)));
+		if (joyR >= Scotstants.JOYSTICK_DEADZONE) {
+			setRight(balanceSpeed(joyR));
+		} else if (joyR <= -Scotstants.JOYSTICK_DEADZONE) {
+			setRight(balanceSpeed(joyR));
 		} else {
 			setRight(0);
 		}
-		if (joyL >= 0.2) {
-			setLeft(0.6*Math.pow(joyL, 2));
-		} else if (joyL <= -0.2) {
-			setLeft(-(0.6*Math.pow(joyL, 2)));
+		
+		if (joyL >= Scotstants.JOYSTICK_DEADZONE) {
+			setLeft(balanceSpeed(joyL));
+		} else if (joyL <= -Scotstants.JOYSTICK_DEADZONE) {
+			setLeft(balanceSpeed(joyL));
 		} else {
 			setLeft(0);
 		}
-
 	}
+	
+	/**
+	 * Balances the speed of the robot using a quadratic equation
+	 * @param joy
+	 * @return
+	 */
+	public double balanceSpeed(double joy) {
+		// Sets the a, b, and c values of the function
+		double a = 0.5722;
+		double b = 0.4817;
+		double c = -0.0539;
+		
+		// Checks if the joystick value is positive or negative
+		double sign = joy / Math.abs(joy);
+		
+		// Returns the answer to the function for the given x value
+		return sign * (a * (Math.pow(joy, 2)) + b * Math.abs(joy) + c);
+		}
 	
 	/**
 	 * Turns the robot a set amount of degrees.
@@ -248,20 +274,43 @@ public class Drive {
 			return true;
 		}
 	}
+	
+	/**
+	 * Drives the robot in accordance with the gyro heading.
+	 * @param v
+	 */
 	public void gyroDrive(double v) {
+		// Having troubles with inversed values for some reason, so v is set to -v
+		// This worked in field testing, but is worth investigating later
 		v  = -v;
+		
+		// Checks if the heading is greater than the deadzone (further right)
 		if (gyro.getOffsetHeading() >= Scotstants.GYRO_DEAD_ZONE) {
+			// If so, drive the right side more than the left (veers left)
 			setLeft(v/2);
 			setRight(2*v);
 		}
+		// Otherwise, checks if the heading is less than the negative deadzone (further left)
 		else if (gyro.getOffsetHeading() < -Scotstants.GYRO_DEAD_ZONE) {
+			// If so, drive the left side more than the right (veers right)
 			setLeft(2*v);
 			setRight(v/2);
 		}
 		else {
+			// Otherwise, drive the robot without accounting for the gyro heading
 			setLeft(v);
 			setRight(v);
 		}
-	}
+		
 }
-
+	public boolean driveStraight(int dist) {
+		gyroDrive(Scotstants.AUTO_MOVE_SPEED);
+		if((getNormalizedPositionL() + getNormalizedPositionR())/2 < (dist * Scotstants.ROTATIONS_TO_FEET) ) {
+			return false;
+			}
+		else {
+			return true;
+			}
+		}
+	
+}

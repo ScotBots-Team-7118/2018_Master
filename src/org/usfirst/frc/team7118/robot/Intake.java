@@ -1,6 +1,7 @@
 package org.usfirst.frc.team7118.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 /**
@@ -29,8 +30,22 @@ public class Intake {
 	 * Runs the intake system at a given velocity.
 	 * @param v
 	 */
-	public void run(double v) {
-		talIR.set(ControlMode.PercentOutput, v);
-		talIL.set(ControlMode.PercentOutput, -v);
+	public void run(int direction) {
+		if (direction == 0) {
+			talIR.set(ControlMode.PercentOutput, 0);
+			talIL.set(ControlMode.PercentOutput, 0);
+		}
+		else if (direction != 1 && direction != -1) {
+			System.out.println("ERROR: Invalid input for function intake.run(int direction).");
+		}
+		else {
+			talIR.set(ControlMode.PercentOutput, direction*Scotstants.AUTO_INTAKE_SPEED);
+			talIL.set(ControlMode.PercentOutput, direction*-Scotstants.AUTO_INTAKE_SPEED);
+		}
+	}
+	
+	public void stop() {
+		talIR.set(ControlMode.PercentOutput, 0);
+		talIL.set(ControlMode.PercentOutput, 0);
 	}
 }
